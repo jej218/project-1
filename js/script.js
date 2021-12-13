@@ -2,7 +2,7 @@
 
     // Ship Values as object
         // Name - string
-        // Size - number
+        // Size - Number
 
     // Cell Name Values as object
         // Name ex. C4 - string
