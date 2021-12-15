@@ -14,6 +14,23 @@
 
 // CREATE CLASSES
 
+
+    // Table Class
+        // Constructor 
+            // Parameters
+                // 10x10 2 dimensional array of Cell objects
+                // isHuman boolean
+                // Array of 5 ship objects for that tables ship (in same order as constant)
+            // Other class Variables
+                // 2D Arrays of Coordinates of:
+                    // cells with a ship that is 'healthy' - initialize via the array of ship objects
+                    // cells with a ship that has been hit - initialize to be null
+                    // cells that are empty (with no ship and have not yet been shot at) - initialize in same loop that initializes healthy ship array
+                    // cells that are misses (no ship and have been shot at) - initialize to be null
+                // NOTE: these values could come from the 10x10 2d array of cell objects, but make it simpler to search a table for specific things
+
+
+
     // Ship Class - represents an individual ship and its status vis a vis the game
         // Constructor
             // Parameters
@@ -53,19 +70,6 @@
                         // return false
                       
                 
-    // Table Class
-        // Constructor 
-            // Parameters
-                // 10x10 2 dimensional array of Cell objects
-                // isHuman boolean
-                // Array of 5 ship objects for that tables ship (in same order as constant)
-            // Other class Variables
-                // 2D Arrays of Coordinates of:
-                    // cells with a ship that is 'healthy' - initialize via the array of ship objects
-                    // cells with a ship that has been hit - initialize to be null
-                    // cells that are empty (with no ship and have not yet been shot at) - initialize in same loop that initializes healthy ship array
-                    // cells that are misses (no ship and have been shot at) - initialize to be null
-                // NOTE: these values could come from the 10x10 2d array of cell objects, but make it simpler to search a table for specific things
 
         // Methods
             // Returns coords of cell object passed as parameter
