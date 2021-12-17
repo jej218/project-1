@@ -52,6 +52,20 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
         this.conditions.length = this.length; 
         this.conditions.fill(false); // initialized as false
         this.locations = []; // representation of the cell objects where the ship is located
+        let squares = document.querySelectorAll(`#${this.name}`);
+        this.statusSquares = [];
+        for (let i = 0; i < squares.length; i++){
+            if(isHuman){
+                if(squares[i].className === 'human-square'){
+                    this.statusSquares.push(squares[i]);
+                }
+            }
+            else{
+                if(squares[i].className === 'ai-square'){
+                    this.statusSquares.push(squares[i]);
+                }
+            }
+        }
     }
 
     placeShip(firstCell){ // establishes the locations array for this ship
@@ -67,6 +81,7 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
             this.locations.push(holderCell); // pushes to locations array
             holderCell.placeShip(this.name); // calls the cells placeShip method with this ships name as argument
         }
+        console.log(this.statusSquares);
     }
      
     setVerticalTo(isVertical){ // simple setter method for the ships isVertical variable
@@ -83,6 +98,9 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
             this.locations.forEach(function(location){ // calls cells sunk method for all cells in ship
                 location.sunk();
             });
+            this.statusSquares.forEach(function(square){
+                square.classList.add('sunk-ship');
+            })
             return true; // tells invoker that ship did sink
         }
         else {
@@ -234,7 +252,7 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
             this.cellElement.classList.remove('fog-of-war');
             this.cellElement.textContent = '?'; // adds texts indicating unknown type of ship if on ai board
         }
-        this.cellElement.classList.add('hit-ship'); // TODO: changes cell style to hit ship 
+        this.cellElement.classList.add('hit-ship'); 
     }
 
     miss(){ // this method handles a player missing in this cell
@@ -244,12 +262,12 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         else{
             this.cellElement.classList.remove('fog-of-war');
         }
-        this.cellElement.classList.add('miss'); // TODO: changes cell style to miss
+        this.cellElement.classList.add('miss'); 
     }
 
     sunk(){ // this method fires when the ship on this cell is sunk
         this.cellElement.classList.remove('hit-ship'); 
-        this.cellElement.classList.add('sunk-ship'); // TODO: changes cell style to sunk ship
+        this.cellElement.classList.add('sunk-ship'); 
         this.cellElement.textContent = this.type.slice(0,1); // sets cell text as the ships type
     }
 }
@@ -345,179 +363,166 @@ function removeClassFromCells(cells, className){
 }
 
 
-// Initialize
- 
-    // Set starting values to what they should be  TODO:
+verticalRadioElement.disabled = false;
+horizontalRadioElement.disabled = false;
+horizontalRadioElement.checked = true;
+submitButtonElement.disabled = true;
+updateTextElement(errorElement, '');
 
 
-// function initialize(){TODO: 
-    verticalRadioElement.disabled = false;
-    horizontalRadioElement.disabled = false;
-    horizontalRadioElement.checked = true;
-    submitButtonElement.disabled = true;
-    updateTextElement(errorElement, '');
+let humanTable = new Table(true, humanTableElement);
+let aiTable = new Table(false, aiTableElement);
+// at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
 
+let humanShips = [];
+let aiShips = [];
 
-    let humanTable = new Table(true, humanTableElement);
-    let aiTable = new Table(false, aiTableElement);
-    // at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
+SHIPVALUES.forEach(function(shipValue){
+    let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
+    let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
+    humanShips.push(humanShipBeingConstructed);
+    aiShips.push(aiShipBeingConstructed);
+});
+// at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
+// and have empty location values
 
-    let humanShips = [];
-    let aiShips = [];
+placeAiShips(aiShips, aiTable);
+// at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
+// now the player must place their ships
 
-    SHIPVALUES.forEach(function(shipValue){
-        let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
-        let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
-        humanShips.push(humanShipBeingConstructed);
-        aiShips.push(aiShipBeingConstructed);
-    });
-    // at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
-    // and have empty location values
+let checkerArray = [];
+let submitBoolean = false;
+let shipCounter = 0;
+let currentShip = humanShips[shipCounter];
+let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
+updateTextElement(instructionElement, message);
+let selectedCell;
 
-    placeAiShips(aiShips, aiTable);
-    // at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
-    // now the player must place their ships
-    
-    let checkerArray = [];
-    let submitBoolean = false;
-    let shipCounter = 0;
-    let currentShip = humanShips[shipCounter];
-    let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
-    updateTextElement(instructionElement, message);
-    let selectedCell;
-
-    humanTableElement.addEventListener('click', function(event){
-        if(shipCounter < 5){
-            currentShip = humanShips[shipCounter];
-            humanTable.cells.forEach(function(row){
-                row.forEach(function(cell){
-                    if(event.target.id === cell.cellNameValue.name){
-                        selectedCell = cell;
-                    }
-                })
-            });
-            submitButtonElement.addEventListener('click', buttonPress);
-
-            if(checkerArray.length === 0){
-                let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
-                updateTextElement(instructionElement, message);
-                currentShip.setVerticalTo(!(horizontalRadioElement.checked));
-                if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
-                    updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
-                    verticalRadioElement.disabled = false;
-                    horizontalRadioElement.disabled = false;
-                    submitButtonElement.disabled = true;
-                    return;
-                }
-                else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
-                    updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
-                    verticalRadioElement.disabled = false;
-                    horizontalRadioElement.disabled = false;
-                    submitButtonElement.disabled = true;
-                    return;
-                }
-                else {
-                    updateTextElement(errorElement, '');
-                    for(let i = 0; i <  currentShip.length; i++){
-                        if(currentShip.isVertical){
-                            checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
-                        }
-                        else{
-                            checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
-                        }
-                    }
-                    removeClassFromCells(checkerArray, 'water');
-                    addClassToCells(checkerArray, 'healthy-ship');
-                    updateTextElement(instructionElement, `You have succesfully placed the ${currentShip.name}. All ${currentShip.length} cells are valid. Press the submit button if you wish to choose this location.`);
-                    submitButtonElement.disabled = false;
-                    verticalRadioElement.disabled = true;
-                    horizontalRadioElement.disabled = true;
-                }
-            }
-            else if(checkerArray.length !== 0 && !submitBoolean){
-                currentShip.setVerticalTo(!(horizontalRadioElement.checked));
-                if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
-                    updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
-                    removeClassFromCells(checkerArray, 'healthy-ship');
-                    addClassToCells(checkerArray, 'water');
-                    checkerArray = [];
-                    verticalRadioElement.disabled = false;
-                    horizontalRadioElement.disabled = false;
-                    submitButtonElement.disabled = true;
-                    return;
-
-                }
-                else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
-                    updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
-                    removeClassFromCells(checkerArray, 'healthy-ship');
-                    addClassToCells(checkerArray, 'water');
-                    checkerArray = [];
-                    verticalRadioElement.disabled = false;
-                    horizontalRadioElement.disabled = false;
-                    submitButtonElement.disabled = true;
-                    return;
-                }
-                else {
-                    updateTextElement(errorElement, '');
-                    removeClassFromCells(checkerArray, 'healthy-ship');
-                    addClassToCells(checkerArray, 'water');
-                    checkerArray = [];
-                    for(let i = 0; i <  currentShip.length; i++){
-                        if(currentShip.isVertical){
-                            checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
-                        }
-                        else{
-                            checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
-                        }
-                    }
-                    removeClassFromCells(checkerArray, 'water');
-                    addClassToCells(checkerArray, 'healthy-ship');
-                    updateTextElement(instructionElement, `You have succesfully placed the ${currentShip.name}. All ${currentShip.length} cells are valid. Press the submit button if you wish to choose this location.`);
-                    submitButtonElement.disabled = false;
-                    verticalRadioElement.disabled = true;
-                    horizontalRadioElement.disabled = true;
-                }
-            }
-        }
-    });
-
-    let playerMoves = 0;
-    let aiMoves = 0;
-    let selectedTargetCell;
-    let allShipsSunk = false;
-    let shotResult;
-    aiTableElement.addEventListener('click', function(event){
-        console.log('got here');
-        aiTable.cells.forEach(function(row){
+humanTableElement.addEventListener('click', function(event){
+    if(shipCounter < 5){
+        currentShip = humanShips[shipCounter];
+        humanTable.cells.forEach(function(row){
             row.forEach(function(cell){
                 if(event.target.id === cell.cellNameValue.name){
-                    selectedTargetCell = cell;
+                    selectedCell = cell;
                 }
             })
         });
-        if(shipCounter === 5){
-            if(!allShipsSunk){
-                if(playerMoves === aiMoves){
-                    shotResult = aiTable.processShot(selectedTargetCell);
-                    console.log(shotResult);
-                    if(shotResult === 0){
-                        return;
-                    }
-                    else{
-                        playerMoves++;
-                    }
-                }
-                generateAIMoveDumb();
-                aiMoves++;
+        submitButtonElement.addEventListener('click', buttonPress);
+
+        if(checkerArray.length === 0){
+            let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
+            updateTextElement(instructionElement, message);
+            currentShip.setVerticalTo(!(horizontalRadioElement.checked));
+            if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
+                updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
+                verticalRadioElement.disabled = false;
+                horizontalRadioElement.disabled = false;
+                submitButtonElement.disabled = true;
                 return;
             }
+            else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
+                updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
+                verticalRadioElement.disabled = false;
+                horizontalRadioElement.disabled = false;
+                submitButtonElement.disabled = true;
+                return;
+            }
+            else {
+                updateTextElement(errorElement, '');
+                for(let i = 0; i <  currentShip.length; i++){
+                    if(currentShip.isVertical){
+                        checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
+                    }
+                    else{
+                        checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
+                    }
+                }
+                removeClassFromCells(checkerArray, 'water');
+                addClassToCells(checkerArray, 'healthy-ship');
+                updateTextElement(instructionElement, `You have succesfully placed the ${currentShip.name}. All ${currentShip.length} cells are valid. Press the submit button if you wish to choose this location.`);
+                submitButtonElement.disabled = false;
+                verticalRadioElement.disabled = true;
+                horizontalRadioElement.disabled = true;
+            }
         }
+        else if(checkerArray.length !== 0 && !submitBoolean){
+            currentShip.setVerticalTo(!(horizontalRadioElement.checked));
+            if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
+                updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
+                removeClassFromCells(checkerArray, 'healthy-ship');
+                addClassToCells(checkerArray, 'water');
+                checkerArray = [];
+                verticalRadioElement.disabled = false;
+                horizontalRadioElement.disabled = false;
+                submitButtonElement.disabled = true;
+                return;
+
+            }
+            else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
+                updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
+                removeClassFromCells(checkerArray, 'healthy-ship');
+                addClassToCells(checkerArray, 'water');
+                checkerArray = [];
+                verticalRadioElement.disabled = false;
+                horizontalRadioElement.disabled = false;
+                submitButtonElement.disabled = true;
+                return;
+            }
+            else {
+                updateTextElement(errorElement, '');
+                removeClassFromCells(checkerArray, 'healthy-ship');
+                addClassToCells(checkerArray, 'water');
+                checkerArray = [];
+                for(let i = 0; i <  currentShip.length; i++){
+                    if(currentShip.isVertical){
+                        checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
+                    }
+                    else{
+                        checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
+                    }
+                }
+                removeClassFromCells(checkerArray, 'water');
+                addClassToCells(checkerArray, 'healthy-ship');
+                updateTextElement(instructionElement, `You have succesfully placed the ${currentShip.name}. All ${currentShip.length} cells are valid. Press the submit button if you wish to choose this location.`);
+                submitButtonElement.disabled = false;
+                verticalRadioElement.disabled = true;
+                horizontalRadioElement.disabled = true;
+            }
+        }
+    }
+});
+
+let playerMoves = 0;
+let aiMoves = 0;
+let selectedTargetCell;
+let allShipsSunk = false;
+let shotResult;
+aiTableElement.addEventListener('click', function(event){
+    aiTable.cells.forEach(function(row){
+        row.forEach(function(cell){
+            if(event.target.id === cell.cellNameValue.name){
+                selectedTargetCell = cell;
+            }
+        })
     });
-
-// } TODO: 
-
-
-// initialize(); TODO:
+    if(shipCounter === 5){
+        if(!allShipsSunk){
+            if(playerMoves === aiMoves){
+                shotResult = aiTable.processShot(selectedTargetCell);
+                if(shotResult === 0){
+                    return;
+                }
+                else{
+                    playerMoves++;
+                }
+            }
+            generateAIMoveDumb();
+            aiMoves++;
+            return;
+        }
+    }
+});
 
 function buttonPress() {
     submitBoolean = true;

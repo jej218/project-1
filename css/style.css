@@ -201,5 +201,11 @@ label {
 }
 .cell {
     text-align: center;
-    font-size: 1.2vw;
+    font-size: 2.5vw;
+}
+.hit-ship {
+    background-color: tomato;
+}
+.sunk-ship {
+    background-color: maroon;
 }
