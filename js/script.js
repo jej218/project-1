@@ -1,6 +1,6 @@
 
 // Array of Ship Values as object
-const SHIPVALUES = [{name: 'Aircraft Carrier', length: 5}, {name: 'Battleship', length: 4}, {name: 'Submarine', length: 3}, {name: 'Cruiser', length: 3}, {name: 'Destroyer', length: 2}];
+const SHIPVALUES = [{name: 'aircraft-carrier', length: 5}, {name: 'battleship', length: 4}, {name: 'submarine', length: 3}, {name: 'cruiser', length: 3}, {name: 'destroyer', length: 2}];
 
 // Double Array of all of the Cell Names as strings
 const CELLNAMES = [['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
@@ -32,14 +32,11 @@ CELLNAMES.forEach(function(row, rowCounter){
 // Cache HTML Elements
 let humanTableElement = document.querySelector('#human-table');
 let aiTableElement = document.querySelector('#ai-table');
-
-    // Instruction panel
-
-    // 'Admin' Panel
-        // Error display
-        // radio inputs for horizontal or vertical (these are grouped)
-
-
+let instructionElement = document.querySelector('#instructions-content');
+let verticalRadioElement = document.querySelector('#orientation-vertical');
+let horizontalRadioElement = document.querySelector('#orientation-horizontal');
+let errorElement = document.querySelector('.error-section');
+let submitButtonElement = document.querySelector('submit-button');
 
 
 class Ship { // Ship Class - represents an individual ship and its status vis a vis the game
@@ -306,11 +303,6 @@ function updateTextElement(element, message){
     element.textContent = message;
 }
 
-    // update text element TODO:
-        // takes html element
-        // takes string
-        // displays string as text in said element
-
     // set input TODO:
         // takes input element
         // takes boolean
@@ -332,7 +324,13 @@ function returnCellRelative(table, cell, relRow, relColumn){ // returns the rela
  
     // Set starting values to what they should be  TODO:
 
+
 // function initialize(){TODO: 
+    verticalRadioElement.disabled = true;
+    horizontalRadioElement.disabled = true;
+    horizontalRadioElement.checked = true;
+    submitButtonElement.disabled = true;
+
 
     let humanTable = new Table(true, humanTableElement);
     let aiTable = new Table(false, aiTableElement);
@@ -356,7 +354,19 @@ function returnCellRelative(table, cell, relRow, relColumn){ // returns the rela
     
     let interimCells = [];
     humanShips.forEach(function(ship){
-
+        let message = `You are placing ${ship.name}. It has ${length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship`;
+        updateTextElement(errorElement, message);
+        verticalRadioElement.disabled = false;
+        horizontalRadioElement.disabled = false;
+        horizontalRadioElement.checked = true;
+        ship.isVertical = false;
+        while(ship.locations.length === 0){
+            ship.locations = [];
+            ship.setVerticalTo(horizontalRadioElement.checked);
+            humanTableElement.addEventListener('click', function(target){
+                
+            });
+        }
     });
     // initialize interim array of cell objects as empty where a ship has been placed on the human board (to check for any doubles)
     // for each ship in array of human ship objects

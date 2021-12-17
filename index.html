@@ -5,52 +5,130 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src='js/script.js'></script>
-    <title>Calculator Lab</title>
+    <title>Project 1</title>
     <link rel='stylesheet' href='css/style.css' type='text/css' />
 </head>
 <body>
   <header class='page-header'>
-    <h4>Link to Repository</h4>
-    <div>
       <h1>Battleship</h1>
       <h3>by John Jasinski</h3>
-    </div>
-      <h4>My Email:</h4>
   </header>
   <main>
     <header class='board-header' id='human-board-header'>
-      <h3 class = 'board-header-text' id='human-board-header-name'>
-        Human's Board
-      </h3>
-      <h5 class = 'board-header-text' id='human-board-header-display'>
-        You have won 0 games
-      </h5>
+        Your Board
     </header>
     <div class='board' id='human-board'>
       <div class = 'table' id='human-table'>
       </div>
-      <section class='left' id='human-left'> </section>
+      <section class='left' id='human-left'>
+      </section>
       <section class='top' id='human-top'> </section>
      <section class='right' id='human-right'> </section>
      <section class='bottom' id='human-bottom'> </section>
     </div>
 
     <header id='info-header'>
-      <h5 id='info-header-text'>
-        Information and Options
-      </h5>
+        Settings & Info
     </header>
-    <div id='info-section'>
-      <p>Test</p>
+    <div id='info-panel'>
+      <div class='info-section' id='ship-status'>
+        <div class='status-title' id='status-main-title'>
+          Ship Status
+        </div>
+        <div class='status-title status-subtitle' id='human-status-header'>
+          You
+        </div>
+        <div class='status-title status-subtitle' id='ai-status-header'>
+          Computer
+        </div>
+        <div class='status-list'>
+          <div class='human-status aircraft-carrier'>
+            <div class='human-square' id='aircraft-carrier-1'>A</div>
+            <div class='human-square' id='aircraft-carrier-2'>A</div>
+            <div class='human-square' id='aircraft-carrier-3'>A</div>
+            <div class='human-square' id='aircraft-carrier-4'>A</div>
+            <div class='human-square' id='aircraft-carrier-5'>A</div>
+          </div>
+          <div class='human-status battleship'>
+            <div class='human-square' id='battleship-1'>B</div>
+            <div class='human-square' id='battleship-2'>B</div>
+            <div class='human-square' id='battleship-3'>B</div>
+            <div class='human-square' id='battleship-4'>B</div>
+          </div>
+          <div class='human-status submarine'>
+            <div class='human-square' id='submarine-1'>S</div>
+            <div class='human-square' id='submarine-2'>S</div>
+            <div class='human-square' id='submarine-3'>S</div>
+          </div>
+          <div class='human-status cruiser'>
+            <div class='human-square' id='cruiser-1'>C</div>
+            <div class='human-square' id='cruiser-2'>C</div>
+            <div class='human-square' id='cruiser-3'>C</div>
+          </div>
+          <div class='human-status destroyer'>
+            <div class='human-square' id='destroyer-1'>D</div>
+            <div class='human-square' id='destroyer-2'>D</div>
+          </div>
+        </div>
+        <div class='status-list'>
+          <div class='ai-status aircraft-carrier'>
+            <div class='ai-square' id='aircraft-carrier-1'>A</div>
+            <div class='ai-square' id='aircraft-carrier-2'>A</div>
+            <div class='ai-square' id='aircraft-carrier-3'>A</div>
+            <div class='ai-square' id='aircraft-carrier-4'>A</div>
+            <div class='ai-square' id='aircraft-carrier-5'>A</div>
+          </div>
+          <div class='ai-status battleship'>
+            <div class='ai-square' id='battleship-1'>B</div>
+            <div class='ai-square' id='battleship-2'>B</div>
+            <div class='ai-square' id='battleship-3'>B</div>
+            <div class='ai-square' id='battleship-4'>B</div>
+          </div>
+          <div class='ai-status submarine'>
+            <div class='ai-square' id='submarine-1'>S</div>
+            <div class='ai-square' id='submarine-2'>S</div>
+            <div class='ai-square' id='submarine-3'>S</div>
+          </div>
+          <div class='ai-status cruiser'>
+            <div class='ai-square' id='cruiser-1'>C</div>
+            <div class='ai-square' id='cruiser-2'>C</div>
+            <div class='ai-square' id='cruiser-3'>C</div>
+          </div>
+          <div class='ai-status destroyer'>
+            <div class='ai-square' id='destroyer-1'>D</div>
+            <div class='ai-square' id='destroyer-2'>D</div>
+          </div>
+        </div>
+      </div>
+      <div class='info-section' id='records'>
+        <div class='record-section' id='human-record'>
+          Your wins:
+        </div>
+        <div class='record-section' id='ai-record'>
+          Computer wins:
+        </div>
+      </div>
+      <div class='info-section' id='input-area'>
+        <div class='radio-section'>
+          <input type="radio" name='orientation' class='orientation' id='orientation-vertical' value='true'>
+          <label for='orientation-vertical'>Vertical</label>
+          <input type="radio" name='orientation' class='orientation' id='orientation-horizontal' value='false'>
+          <label for='orientation-horizontal'>Horizontal</label>
+        </div>
+        <input type='button' value='Submit Ship' class='submit-button'>
+      </div>
+      <div class='info-section' id='instructions'>
+        <div id='instructions-header'>
+          Instructions:
+        </div>
+        <div id='instructions-content'>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+        </div>
+      </div>
     </div>
 
     <header class='board-header' id='ai-board-header'>
-      <h3 class = 'board-header-text' id='ai-board-header-name'>
-        AI's Board
-      </h3>
-      <h5 class = 'board-header-text' id='ai-board-header-display'>
-        The Computer is playing...
-      </h5>
+        The Computer's Board
     </header>
     <div class='board' id='ai-board'>
       <div class = 'table' id='ai-table'>
@@ -66,4 +144,9 @@
   </main>
 
 </body>
+<footer>
+  <div class='error-section'>
+    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa architecto sunt itaque saepe ipsa assumenda dicta! Officia numquam reprehenderit suscipit perspiciatis consequuntur unde! Itaque accusantium officiis magnam quisquam deserunt aperiam.
+  </div>
+</footer>
 </html>
