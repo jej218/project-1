@@ -9,6 +9,7 @@ h3, h5{
     margin-block-start: 0;
     margin-block-end: 0;
 }
+
 main {
     display: grid;
     grid-template-rows: minmax(30px, 2fr) minmax(300px, 20fr);
@@ -38,7 +39,7 @@ main {
     grid-area: ai-header;
 }
 .board {
-    background-color: rgb(119, 107, 189);
+    background-color: orange;
     aspect-ratio: 1;
 }
 #human-board {
@@ -64,7 +65,7 @@ main {
 }
 
 .left, .right, .top, .bottom {
-    background-color: darkgrey;
+    background-color: palevioletred;
     display: grid;
 }
 .left {
@@ -90,6 +91,15 @@ main {
 
 .cell {
     border: 1px solid black;
+}
+.water {
+    background-color: blue;
+}
+.fog-of-war {
+    background-color: lightgray;
+}
+.healthy-ship {
+    background-color: darkgrey;
 }
 
 #info-section {

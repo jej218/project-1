@@ -14,16 +14,16 @@ const CELLNAMES = [['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10']
     ['i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'i7', 'i8', 'i9', 'i10'],
     ['j1', 'j2', 'j3', 'j4', 'j5', 'j6', 'j7', 'j8', 'j9', 'j10']];
 
-// Double Array of Cell info as objects - one value name from CELLNAMES - one value x coord - one value y coord
+// Double Array of Cell info as objects - one value name from CELLNAMES - one value column coord - one value row coord
 // This was done to avoid typing out all of the values for each 100 objects
 const CELLNAMEVALUES = [];
-CELLNAMES.forEach(function(row, i){
+CELLNAMES.forEach(function(row, rowCounter){
     let placeHolderRow = [];
-    row.forEach(function(cell, j){
+    row.forEach(function(cell, columnCounter){
         let placeHolderCell = {};
         placeHolderCell.name = cell;
-        placeHolderCell.x = j;
-        placeHolderCell.y = i;
+        placeHolderCell.rowCoord = rowCounter;
+        placeHolderCell.columnCoord = columnCounter;
         placeHolderRow.push(placeHolderCell);
     });
     CELLNAMEVALUES.push(placeHolderRow);
@@ -62,18 +62,18 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
         let holderCell;
         for(let i = 0; i < this.length; i++){ // iterates once for each cell of the ship
             if(this.isVertical){
-                holderCell = returnCellRelative(this.table, firstCell, firstCell.cellNameValue.x, i); // sets the cell variable along the y axis
+                holderCell = returnCellRelative(this.table, firstCell, i, 0); // sets the cell variable along the row axis
             }
             else{
-                holderCell = returnCellRelative(this.table, firstCell, i, firstCell.cellNameValue.y); // sets the cell variable along the x axis
+                holderCell = returnCellRelative(this.table, firstCell, 0, i); // sets the cell variable along the column axis
             }
             this.locations.push(holderCell); // pushes to locations array
             holderCell.placeShip(this.name); // calls the cells placeShip method with this ships name as argument
         }
     }
      
-    setVerticalTo(isVerticle){ // simple setter method for the ships isVertical variable
-        this.isVertical = isVerticle;
+    setVerticalTo(isVertical){ // simple setter method for the ships isVertical variable
+        this.isVertical = isVertical;
     }
 
     hit(cell){  // function to hand a cell on this ship getting hit. It is passed from this ship's table
@@ -106,7 +106,7 @@ class Table{ // the table class represents a game board for a player - but also 
         // this is a block of code that creates the cells within the table
         // both the HTML element and the JS Object are created within the table constructor
         let cellsUnderConstruction = [];
-        CELLNAMEVALUES.forEach(function(row, i){ // parse through CELLNAMEVALUES for proper 10x10 format and data availability
+        CELLNAMEVALUES.forEach(function(row, i){ // parse through CELLNAMEVALUES for proper 10by10 format and data availability
             let rowUnderConstruction = [];
             row.forEach(function(cell, j){
                 let divUnderConstruction = document.createElement('div');
@@ -132,32 +132,38 @@ class Table{ // the table class represents a game board for a player - but also 
         this.missedCells = []; // represents the missed cells - stays empty during initialization
     }
 
-    setShips(ships){ // simple setter method for the ships array
-        this.ships = ships;
+    setAShip(ship, cell){ // adds a ship to the ship array and places it for the Ship object
+        // note that this must be done in ship order (as in global constant)
+        this.ships.push(ship);
+        ship.placeShip(cell);
     }
 
     fillCellArrays(){ // fills up the arrays of cells after ships array has been set
+        let healthyCellsToPush = [];
         this.ships.forEach(function(ship){
             ship.locations.forEach(function(location){
-                this.healthyShipCells.push(location); // adds each cell of each ship to the array
+                healthyCellsToPush.push(location);
             });
         });
+        this.healthyShipCells = healthyCellsToPush; // adds each cell of each ship to the array
+        let emptyCellsToPush = [];
         this.cells.forEach(function(row){
             row.forEach(function(cell){
-                if(!(this.healthyShipCells.includes(cell))){
-                    this.emptyCells.push(cell); // looks through all cells in all the rows in the table and adds cell to array if its not a ship
+                if(healthyCellsToPush.includes(cell) === false){
+                    emptyCellsToPush.push(cell); // looks through all cells in all the rows in the table and adds cell to array if its not a ship
                 }
             });
         });
+        this.emptyCells = emptyCellsToPush;
     }
 
-    // this might be redundant with tableObject.cells[x][y]
+    // this might be redundant with tableObject.cells[rowCoord][columnCoord]
     // i finished it so im going to keep it for now
-    returnCell(x, y){ // returns the cell object given the coordinates of the cell
+    returnCell(rowCoord, columnCoord){ // returns the cell object given the coordinates of the cell
         let cellToReturn;
         this.cells.forEach(function(row){ // looks through each row
             cellToReturn = row.find(function(cell){ 
-                return cell.cellNameValue.x === x && cell.cellNameValue.y === y; // finds cell that has the same coordinates
+                return cell.cellNameValue.rowCoord === rowCoord && cell.cellNameValue.columnCoord === columnCoord; // finds cell that has the same coordinates
             });
         });
         return cellToReturn;
@@ -206,10 +212,10 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         this.cellNameValue = cellNameValue; // object with the coordinates represented as numbers and as a string (from CELLNAMEVALUES array)
         this.type = ''; // the Name of the ship in this cell, if there is one
         if(this.isHuman){
-            this.cellElement.classList.add('water'); // TODO: sets the initial style of a humans cell to be empty water
+            this.cellElement.classList.add('water'); // sets the initial style of a humans cell to be empty water
         }
         else{
-            this.cellElement.classList.add('fog-of-war'); // TODO: sets the intial style of an AIs cell to be fog-of-war
+            this.cellElement.classList.add('fog-of-war'); // sets the intial style of an AIs cell to be fog-of-war
         }
     }
 
@@ -218,7 +224,7 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         this.type = name;
         if(this.isHuman){
             this.cellElement.classList.remove('water'); // changes style from empty water to a healthy ship if on players board
-            this.cellElement.classList.add('healthy-ship'); // TODO:
+            this.cellElement.classList.add('healthy-ship');
             this.cellElement.textContent = type.slice(0,1); // also adds text of ship type on player board
         }
     }
@@ -253,17 +259,52 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
 
 
 // non class functions
-    // place ai ships TODO:
-        // arguments
-            // takes array of ship objects
-            // takes table object
-        // sets the value of the ai's ships cells
-            // does this by calling placeShip method of each ship object
-                // this takes the cell object of the top or left cell
-                // setVerticalTo is called if needed
-                // this method also handles the drawing of the cells (not needed for AI's table but stores ship names)
-        // assigns ship objects to ai table object
-        // calls ai table object method to populate cell data arrays
+
+function placeAiShips(aiShips, aiTable){ // this function handles the placement of the AI ships
+    // the parameters are an array of ships, and the table object
+    // the placemnt is done randomly via trial and error - a possible addition could add strategy to placement
+    aiShips.forEach(function(ship){
+        while(ship.locations.length === 0){ 
+            let randRow = Math.floor(Math.random() * 10); // 2 random numbers 0-9 for the coordinates, 1 random number 0-1 to determine orientation
+            let randColumn = Math.floor(Math.random() * 10);
+            let randOrientation = Math.floor(Math.random() * 2);
+            ship.setVerticalTo(Boolean(randOrientation)); // sets the ships verticality to true if 1, false if 0
+            let startCell = aiTable.cells[randRow][randColumn]; // grabs the cell with the random coordinates
+            if(isShipPlacementValid(startCell, ship, aiTable)){
+                aiTable.setAShip(ship, startCell);
+            }
+        } 
+    });
+    aiTable.fillCellArrays();
+}
+
+function isShipPlacementValid(cell, ship, table){ // function to check for validity of ship placement
+    // takes as parameters the cell of top or leftmost cell in ship (the cell picked by human or ai),
+    // the ship object being placed, and the table its being placed on
+    let cellToCheck;
+    for(let i = 0; i < ship.length; i++){ // checks as many cells as the length of the ship
+        if(ship.isVertical){
+            cellToCheck = returnCellRelative(table, cell, i, 0); // sets the cell to check if the ship is vertical
+            if(cellToCheck === undefined || table.ships.some(e => e.locations.includes(cellToCheck))){
+                // this occurs if the cell is undefined (not in the 10by10) or is already placed
+                // the second check has to check the ship object's locations array because the table
+                // object's cell arrays have not yet been defined
+                return false;
+            }
+        }
+        else{
+            cellToCheck = returnCellRelative(table, cell, 0, i)  // sets the cell to check if the ship is horizontal
+            if(cellToCheck === undefined || table.ships.some(e => e.locations.includes(cellToCheck))){
+                return false;
+            }
+        }
+    }
+    return true; // final return statement if each potential cell passes the checks
+}
+
+function updateTextElement(element, message){
+    element.textContent = message;
+}
 
     // update text element TODO:
         // takes html element
@@ -276,25 +317,22 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         // clears prior value of input
         // sets active status to boolean value
 
-    // returnCellRelative TODO:
-        // takes table
-        // takes cell
-        // takes relative x
-        // takes relative y
-
-        // returns cell object in table relative to original cell by whatever x and y translations
-
-    function returnCellRelative(table, cell, relX, relY){
-        let initX = cell.xCoord;
-        let initY = cell.yCoord;
-        return table.cellGrid[initX + relX][initY + relY];
+function returnCellRelative(table, cell, relRow, relColumn){ // returns the relative cell given a table, cell, and relative row and column coordinates
+    let initRow = cell.cellNameValue.rowCoord;
+    let initColumn = cell.cellNameValue.columnCoord;
+    if(initRow+relRow > 9 || initColumn+relColumn > 9){ // checks for invalid cell to prevent error
+        return undefined; // returns undefined if cell is invalid
     }
+    else{
+        return table.cells[initRow + relRow][initColumn + relColumn];
+    }
+}
 
 // Initialize
  
     // Set starting values to what they should be  TODO:
 
-function initialize(){
+// function initialize(){TODO: 
 
     let humanTable = new Table(true, humanTableElement);
     let aiTable = new Table(false, aiTableElement);
@@ -309,21 +347,17 @@ function initialize(){
         humanShips.push(humanShipBeingConstructed);
         aiShips.push(aiShipBeingConstructed);
     });
-
-
-
     // at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
     // and have empty location values
 
-    // call choose ai ship location function
-        // parameters
-            // ai table
-            // ai ship object array 
-
-
+    placeAiShips(aiShips, aiTable);
     // at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
     // now the player must place their ships
+    
+    let interimCells = [];
+    humanShips.forEach(function(ship){
 
+    });
     // initialize interim array of cell objects as empty where a ship has been placed on the human board (to check for any doubles)
     // for each ship in array of human ship objects
         // call updatetext method for instructions
@@ -371,7 +405,7 @@ function initialize(){
     // set radio values as not active
     // call method to populate human table arrays
 
-}
+// } TODO: 
 
 
-initialize();
+// initialize(); TODO: 
