@@ -194,5 +194,12 @@ label {
 .error-section{
     background-color: burlywood;
     font-size: 2vw;
-
+    min-height: 3vw;
+}
+.miss {
+    background-color: whitesmoke;
+}
+.cell {
+    text-align: center;
+    font-size: 1.2vw;
 }

@@ -32,11 +32,11 @@ CELLNAMES.forEach(function(row, rowCounter){
 // Cache HTML Elements
 let humanTableElement = document.querySelector('#human-table');
 let aiTableElement = document.querySelector('#ai-table');
-let instructionElement = document.querySelector('#instructions-content');
+let errorElement = document.querySelector('#instructions-content');
 let verticalRadioElement = document.querySelector('#orientation-vertical');
 let horizontalRadioElement = document.querySelector('#orientation-horizontal');
-let errorElement = document.querySelector('.error-section');
-let submitButtonElement = document.querySelector('submit-button');
+let instructionElement = document.querySelector('.error-section');
+let submitButtonElement = document.querySelector('.submit-button');
 
 
 class Ship { // Ship Class - represents an individual ship and its status vis a vis the game
@@ -78,7 +78,7 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
         this.conditions[this.locations.findIndex(location => location === cell)] = true; // this sets the value of the conditions array that matches with 
         // the hit cell to be true
         cell.hit();  // this calls the cells hit function
-        if(this.conditions.every(condition)){ // if all values in conditions are true (all cells are hit)
+        if(this.conditions.every(condition => condition === true)){ // if all values in conditions are true (all cells are hit)
             this.isSunk = true;
             this.locations.forEach(function(location){ // calls cells sunk method for all cells in ship
                 location.sunk();
@@ -174,7 +174,7 @@ class Table{ // the table class represents a game board for a player - but also 
 
     processShot(cell){ // this method processes a shot by either player onto their opponent taking a cell object as its parameter
         //it returns a number value depending on the result as well as dealing with the logic of the results of the shot
-        if(this.hitShipCells.includes(cell) || this.missedShipCells.includes(cell)){
+        if(this.hitShipCells.includes(cell) || this.missedCells.includes(cell)){
             return 0; // returns 0 if the cell has already been hit or missed
         }
         else if(this.emptyCells.includes(cell)){ // if this cell is empty (no ship)
@@ -222,7 +222,7 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         if(this.isHuman){
             this.cellElement.classList.remove('water'); // changes style from empty water to a healthy ship if on players board
             this.cellElement.classList.add('healthy-ship');
-            this.cellElement.textContent = type.slice(0,1); // also adds text of ship type on player board
+            this.cellElement.textContent = this.type.slice(0,1); // also adds text of ship type on player board
         }
     }
 
@@ -267,7 +267,7 @@ function placeAiShips(aiShips, aiTable){ // this function handles the placement 
             let randOrientation = Math.floor(Math.random() * 2);
             ship.setVerticalTo(Boolean(randOrientation)); // sets the ships verticality to true if 1, false if 0
             let startCell = aiTable.cells[randRow][randColumn]; // grabs the cell with the random coordinates
-            if(isShipPlacementValid(startCell, ship, aiTable)){
+            if(isShipPlacementValid(startCell, ship, aiTable) === 0){
                 aiTable.setAShip(ship, startCell);
             }
         } 
@@ -282,32 +282,44 @@ function isShipPlacementValid(cell, ship, table){ // function to check for valid
     for(let i = 0; i < ship.length; i++){ // checks as many cells as the length of the ship
         if(ship.isVertical){
             cellToCheck = returnCellRelative(table, cell, i, 0); // sets the cell to check if the ship is vertical
-            if(cellToCheck === undefined || table.ships.some(e => e.locations.includes(cellToCheck))){
+            if(cellToCheck === undefined){
+                return 1;
+            } 
+            else if(table.ships.some(e => e.locations.includes(cellToCheck))){
                 // this occurs if the cell is undefined (not in the 10by10) or is already placed
                 // the second check has to check the ship object's locations array because the table
                 // object's cell arrays have not yet been defined
-                return false;
+                return 2;
             }
         }
         else{
             cellToCheck = returnCellRelative(table, cell, 0, i)  // sets the cell to check if the ship is horizontal
-            if(cellToCheck === undefined || table.ships.some(e => e.locations.includes(cellToCheck))){
-                return false;
+            if(cellToCheck === undefined){
+                return 1;
+            }
+            else if(table.ships.some(e => e.locations.includes(cellToCheck))){
+                return 2;
             }
         }
     }
-    return true; // final return statement if each potential cell passes the checks
+    return 0; // final return statement if each potential cell passes the checks
 }
 
 function updateTextElement(element, message){
     element.textContent = message;
 }
 
-    // set input TODO:
-        // takes input element
-        // takes boolean
-        // clears prior value of input
-        // sets active status to boolean value
+function generateAIMoveDumb(){
+    let targetIsGood = false;
+    while(!targetIsGood){
+        let randRow = Math.floor(Math.random() * 10);
+        let randColumn = Math.floor(Math.random() * 10);
+        if(humanTable.processShot(humanTable.cells[randRow][randColumn]) !== 0){
+            targetIsGood = true;
+        }
+    }
+    return;
+}
 
 function returnCellRelative(table, cell, relRow, relColumn){ // returns the relative cell given a table, cell, and relative row and column coordinates
     let initRow = cell.cellNameValue.rowCoord;
@@ -320,16 +332,30 @@ function returnCellRelative(table, cell, relRow, relColumn){ // returns the rela
     }
 }
 
+function addClassToCells(cells, className){
+    cells.forEach(function(cell){
+        cell.cellElement.classList.add(className);
+    });
+}
+
+function removeClassFromCells(cells, className){
+    cells.forEach(function(cell){
+        cell.cellElement.classList.remove(className);
+    });
+}
+
+
 // Initialize
  
     // Set starting values to what they should be  TODO:
 
 
 // function initialize(){TODO: 
-    verticalRadioElement.disabled = true;
-    horizontalRadioElement.disabled = true;
+    verticalRadioElement.disabled = false;
+    horizontalRadioElement.disabled = false;
     horizontalRadioElement.checked = true;
     submitButtonElement.disabled = true;
+    updateTextElement(errorElement, '');
 
 
     let humanTable = new Table(true, humanTableElement);
@@ -352,70 +378,167 @@ function returnCellRelative(table, cell, relRow, relColumn){ // returns the rela
     // at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
     // now the player must place their ships
     
-    let interimCells = [];
-    humanShips.forEach(function(ship){
-        let message = `You are placing ${ship.name}. It has ${length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship`;
-        updateTextElement(errorElement, message);
-        verticalRadioElement.disabled = false;
-        horizontalRadioElement.disabled = false;
-        horizontalRadioElement.checked = true;
-        ship.isVertical = false;
-        while(ship.locations.length === 0){
-            ship.locations = [];
-            ship.setVerticalTo(horizontalRadioElement.checked);
-            humanTableElement.addEventListener('click', function(target){
-                
+    let checkerArray = [];
+    let submitBoolean = false;
+    let shipCounter = 0;
+    let currentShip = humanShips[shipCounter];
+    let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
+    updateTextElement(instructionElement, message);
+    let selectedCell;
+
+    humanTableElement.addEventListener('click', function(event){
+        if(shipCounter < 5){
+            currentShip = humanShips[shipCounter];
+            humanTable.cells.forEach(function(row){
+                row.forEach(function(cell){
+                    if(event.target.id === cell.cellNameValue.name){
+                        selectedCell = cell;
+                    }
+                })
             });
+            submitButtonElement.addEventListener('click', buttonPress);
+
+            if(checkerArray.length === 0){
+                let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
+                updateTextElement(instructionElement, message);
+                currentShip.setVerticalTo(!(horizontalRadioElement.checked));
+                if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
+                    updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
+                    verticalRadioElement.disabled = false;
+                    horizontalRadioElement.disabled = false;
+                    submitButtonElement.disabled = true;
+                    return;
+                }
+                else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
+                    updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
+                    verticalRadioElement.disabled = false;
+                    horizontalRadioElement.disabled = false;
+                    submitButtonElement.disabled = true;
+                    return;
+                }
+                else {
+                    updateTextElement(errorElement, '');
+                    for(let i = 0; i <  currentShip.length; i++){
+                        if(currentShip.isVertical){
+                            checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
+                        }
+                        else{
+                            checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
+                        }
+                    }
+                    removeClassFromCells(checkerArray, 'water');
+                    addClassToCells(checkerArray, 'healthy-ship');
+                    updateTextElement(instructionElement, `You have succesfully placed the ${currentShip.name}. All ${currentShip.length} cells are valid. Press the submit button if you wish to choose this location.`);
+                    submitButtonElement.disabled = false;
+                    verticalRadioElement.disabled = true;
+                    horizontalRadioElement.disabled = true;
+                }
+            }
+            else if(checkerArray.length !== 0 && !submitBoolean){
+                currentShip.setVerticalTo(!(horizontalRadioElement.checked));
+                if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
+                    updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
+                    removeClassFromCells(checkerArray, 'healthy-ship');
+                    addClassToCells(checkerArray, 'water');
+                    checkerArray = [];
+                    verticalRadioElement.disabled = false;
+                    horizontalRadioElement.disabled = false;
+                    submitButtonElement.disabled = true;
+                    return;
+
+                }
+                else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
+                    updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
+                    removeClassFromCells(checkerArray, 'healthy-ship');
+                    addClassToCells(checkerArray, 'water');
+                    checkerArray = [];
+                    verticalRadioElement.disabled = false;
+                    horizontalRadioElement.disabled = false;
+                    submitButtonElement.disabled = true;
+                    return;
+                }
+                else {
+                    updateTextElement(errorElement, '');
+                    removeClassFromCells(checkerArray, 'healthy-ship');
+                    addClassToCells(checkerArray, 'water');
+                    checkerArray = [];
+                    for(let i = 0; i <  currentShip.length; i++){
+                        if(currentShip.isVertical){
+                            checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
+                        }
+                        else{
+                            checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
+                        }
+                    }
+                    removeClassFromCells(checkerArray, 'water');
+                    addClassToCells(checkerArray, 'healthy-ship');
+                    updateTextElement(instructionElement, `You have succesfully placed the ${currentShip.name}. All ${currentShip.length} cells are valid. Press the submit button if you wish to choose this location.`);
+                    submitButtonElement.disabled = false;
+                    verticalRadioElement.disabled = true;
+                    horizontalRadioElement.disabled = true;
+                }
+            }
         }
     });
-    // initialize interim array of cell objects as empty where a ship has been placed on the human board (to check for any doubles)
-    // for each ship in array of human ship objects
-        // call updatetext method for instructions
-            // You are placing ship name - 
-            // it has size cells - 
-            // select radio option of your desired orientation (Horizontal is default)
-            // Then click top or left cell of ship
-        // set radio options to active with method
-        // set horizontal radio to active
 
-        // this sets up the instructions and the initial input element interactions - next to the eventListener for cell click
-        // while this ship objects location array is empty - while this ship in the loop does not yet have a location
-        // this loop must provide the option for the player to exit or it is infinite - later on add reset button exit option here
-            // reset this ships loction array to empty
-            // call ships setVerticalTo method with radio input as arguments
-            // add event onclick listener to human table
-                // find object representing the cell that was clicked via currentTarget and Table object cell lookup
-                // intialize checkerArray as empty - this holds each cell that passes the forloop but is redeclared empty at the 
-                // beginning of each
-                // for loop - iterations equal to length of this ship - iterating through the cells in this potential selection
-                    // initialize two numbers to represent the coords of the cell to check
-                    // if horizontal
-                        // set coords one way
-                    // else if horizontal
-                        // set coords other way
-
-                    // if this cell does not exist (using iterator and 2d array coords to generate location of additional cells)
-                        // updatetext for warning with 'One of the cells in your selection would be off the board!'
-                        // return
-                    // else if this cell matches with any in the interim array
-                        // updatetext for warning with 'One of the cells in your selection would overlap another ship'
-                        // return
-                    // add cell object to checker array
-                // Making it to this point means the cell clicked in combo with the orientation is valid - in the future look to include a submission button
-                // updatetext for warning with ''
-                // use iterator method to set correct cells to the Ship object
-                    // checkerArray has the correct cells in order until event ends
-                    // also make sure to call the ship objects placeShip method to draw the cells
-                // end of event
-            // ships location array should now have a value - ending while loop
-        // add each cell in ship object to interim array for interim storage of all used cells
-        // add ship to human table object array of ship objects
-    // updatetext method for instructions as blank
-    // clear radio values
-    // set radio values as not active
-    // call method to populate human table arrays
+    let playerMoves = 0;
+    let aiMoves = 0;
+    let selectedTargetCell;
+    let allShipsSunk = false;
+    let shotResult;
+    aiTableElement.addEventListener('click', function(event){
+        console.log('got here');
+        aiTable.cells.forEach(function(row){
+            row.forEach(function(cell){
+                if(event.target.id === cell.cellNameValue.name){
+                    selectedTargetCell = cell;
+                }
+            })
+        });
+        if(shipCounter === 5){
+            if(!allShipsSunk){
+                if(playerMoves === aiMoves){
+                    shotResult = aiTable.processShot(selectedTargetCell);
+                    console.log(shotResult);
+                    if(shotResult === 0){
+                        return;
+                    }
+                    else{
+                        playerMoves++;
+                    }
+                }
+                generateAIMoveDumb();
+                aiMoves++;
+                return;
+            }
+        }
+    });
 
 // } TODO: 
 
 
-// initialize(); TODO: 
+// initialize(); TODO:
+
+function buttonPress() {
+    submitBoolean = true;
+    submitButtonElement.disabled = true;
+    verticalRadioElement.disabled = false;
+    horizontalRadioElement.disabled = false;
+    checkerArray.forEach(function(cell){
+        cell.cellElement.innerText = 'A';
+    })
+    humanTable.setAShip(currentShip, selectedCell);
+    shipCounter++;
+    if(shipCounter >=5){
+        humanTable.fillCellArrays();
+        verticalRadioElement.disabled = true;
+        horizontalRadioElement.disabled = true;
+        updateTextElement(instructionElement, `You have placed all of your ships. Click on the Computer's board to choose a target and start the game!`);
+        return;
+    }
+    currentShip = humanShips[shipCounter];
+    message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
+    updateTextElement(instructionElement, message);
+    checkerArray = [];
+    return;
+}
