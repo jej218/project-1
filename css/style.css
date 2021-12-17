@@ -20,6 +20,16 @@ main {
 
 .board-header {
     background-color: chartreuse;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+#info-header {
+    background-color: seagreen;
+    grid-area: info-header;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #human-board-header {
     grid-area: human-header;
@@ -27,54 +37,61 @@ main {
 #ai-board-header {
     grid-area: ai-header;
 }
-
-/*
-.letter, .number {
-    background-color: darkgrey;
-}
-.letter{
-    aspect-ratio: .05;
-}
-#human-left {
-    grid-area: human-table-left;
-}
-#human-right {
-    grid-area: human-table-right;
-}
-#human-top {
-    grid-area: human-table-top;
-}
-#human-bottom {
-    grid-area: human-table-bottom;
-}
-#ai-left {
-    grid-area: ai-table-left;
-}
-#ai-right {
-    grid-area: ai-table-right;
-}
-#ai-top {
-    grid-area: ai-table-top;
-}
-#ai-bottom {
-    grid-area: ai-table-bottom;
-}
-*/
-.table {
+.board {
     background-color: rgb(119, 107, 189);
     aspect-ratio: 1;
 }
-#human-table {
+#human-board {
     grid-area: human-table;
+    display: grid;
+    grid-template-rows: 1fr 10fr 1fr;
+    grid-template-columns: 1fr 10fr 1fr;
 }
-#ai-table {
+#ai-board {
     grid-area: ai-table;
+    display: grid;
+    grid-template-rows: 1fr 10fr 1fr;
+    grid-template-columns: 1fr 10fr 1fr;
 }
 
-#info-options-header {
-    background-color: seagreen;
-    grid-area: info-header;
+.table {
+    background-color: red;
+    grid-column-start: 2;
+    grid-row-start: 2;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
 }
+
+.left, .right, .top, .bottom {
+    background-color: darkgrey;
+    display: grid;
+}
+.left {
+    grid-column-start: 1;
+    grid-row-start: 2;
+    grid-template-rows: repeat(10, 1fr);
+}
+.right {
+    grid-column-start: 3;
+    grid-row-start: 2;
+    grid-template-rows: repeat(10, 1fr);
+}
+.top {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    grid-template-columns: repeat(10, 1fr);
+}
+.bottom {
+    grid-column-start: 2;
+    grid-row-start: 3;
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.cell {
+    border: 1px solid black;
+}
+
 #info-section {
     background-color: blue;
     grid-area: info-area;

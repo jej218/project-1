@@ -24,11 +24,23 @@ CELLNAMES.forEach(function(row, i){
         placeHolderCell.name = cell;
         placeHolderCell.x = j;
         placeHolderCell.y = i;
-        console.log(placeHolderCell);
         placeHolderRow.push(placeHolderCell);
     });
     CELLNAMEVALUES.push(placeHolderRow);
 });
+
+// Cache HTML Elements
+let humanTableElement = document.querySelector('#human-table');
+let aiTableElement = document.querySelector('#ai-table');
+
+    // Instruction panel
+
+    // 'Admin' Panel
+        // Error display
+        // radio inputs for horizontal or vertical (these are grouped)
+
+
+
 
 class Ship { // Ship Class - represents an individual ship and its status vis a vis the game
     constructor(shipValue, table, isHuman){
@@ -50,10 +62,10 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
         let holderCell;
         for(let i = 0; i < this.length; i++){ // iterates once for each cell of the ship
             if(this.isVertical){
-                holderCell = returnCellRelative(this.table, firstCell, firstCell.cellName.x, i); // sets the cell variable along the y axis
+                holderCell = returnCellRelative(this.table, firstCell, firstCell.cellNameValue.x, i); // sets the cell variable along the y axis
             }
             else{
-                holderCell = returnCellRelative(this.table, firstCell, i, firstCell.cellName.y); // sets the cell variable along the x axis
+                holderCell = returnCellRelative(this.table, firstCell, i, firstCell.cellNameValue.y); // sets the cell variable along the x axis
             }
             this.locations.push(holderCell); // pushes to locations array
             holderCell.placeShip(this.name); // calls the cells placeShip method with this ships name as argument
@@ -89,88 +101,115 @@ class Table{ // the table class represents a game board for a player - but also 
         this.isHuman = isHuman;
         this.tableElement = tableElement; // the HTML element containing the board that the table represents
         this.ships = []; // an array of all of the ship objects on this player's board - empty before ships are placed
-        this.cells = [];
-        CELLNAMEVALUES.forEach(function(row, i){
-            row.forEach(function(cell, j){
+        this.shipsSunk = 0; // counter for sunk ships
 
+        // this is a block of code that creates the cells within the table
+        // both the HTML element and the JS Object are created within the table constructor
+        let cellsUnderConstruction = [];
+        CELLNAMEVALUES.forEach(function(row, i){ // parse through CELLNAMEVALUES for proper 10x10 format and data availability
+            let rowUnderConstruction = [];
+            row.forEach(function(cell, j){
+                let divUnderConstruction = document.createElement('div');
+                divUnderConstruction.classList.add('cell'); // creates new div and adds cell class 
+                divUnderConstruction.id = CELLNAMEVALUES[i][j].name; // new div's id is its Letter-Number coords, for easy reference
+                tableElement.append(divUnderConstruction); // appends this div to the tables element
+                let cellUnderConstruction = new Cell(divUnderConstruction, isHuman, CELLNAMEVALUES[i][j]); // constructs the cell
+                // passes the html element, the tables isHuman variable, and the object from CELLNAMEVALUES for this cell
+                rowUnderConstruction.push(cellUnderConstruction);
+                // pushes the cell to the temporary row array
+            });
+            cellsUnderConstruction.push(rowUnderConstruction); // pushes the now complete temporary row array to the tables cells array
+        });
+        this.cells = cellsUnderConstruction; // an array of all of the cell objects in this table
+
+        // these variables are arrays which are lists of certain categories of cells
+        // they are used to check if a cell chosen by an oppoent has already been chosen
+        // or if it will hit or miss. Because Table is constructed with an empty Ships array
+        // they must be filled after the Table's Ships array is filled
+        this.healthyShipCells = []; // represents the cells with healthy (unhit) ships
+        this.hitShipCells = []; // represents the cells with hit ships - stays empty during initialization
+        this.emptyCells = []; // represents the cells with no ship that have not yet been missed
+        this.missedCells = []; // represents the missed cells - stays empty during initialization
+    }
+
+    setShips(ships){ // simple setter method for the ships array
+        this.ships = ships;
+    }
+
+    fillCellArrays(){ // fills up the arrays of cells after ships array has been set
+        this.ships.forEach(function(ship){
+            ship.locations.forEach(function(location){
+                this.healthyShipCells.push(location); // adds each cell of each ship to the array
+            });
+        });
+        this.cells.forEach(function(row){
+            row.forEach(function(cell){
+                if(!(this.healthyShipCells.includes(cell))){
+                    this.emptyCells.push(cell); // looks through all cells in all the rows in the table and adds cell to array if its not a ship
+                }
             });
         });
     }
-// Table Class
-// Constructor 
-    // Parameters
-        // isHuman boolean
-        // HTML Element that contains the Table 
-    // Other class Variables
-        // Array of 5 ship objects for that tables ship (in same order as constant) - set as empty to start
-        // 10x10 2 dimensional array of Cell objects
-            // Cell Objects
-                // Created within the table class constructor
-                // HTML element created for each cell
-                // Adds an Id to that element representing the alphanumerical code for the cell (C3 ex)
-                // passes table class variables to Cell class constructor 
-                    // HTML element for the cell
-                    // coords from for loop
-                    // isHuman boolean
-                    // Cell Value (name) object, working through that global array with the same reference
-                // pushes each cell object to the Array (keeping 2 by 2 format)
-        // Arrays of Cells of:
-            // cells with a ship that is 'healthy' - initialize to be empty
-            // cells with a ship that has been hit - initialize to be empty
-            // cells that are empty (with no ship and have not yet been shot at) - initialize to be empty
-            // cells that are misses (no ship and have been shot at) - initialize to be empty
-                        
-// Methods
-    // sets array of ship objects
-        // takes array of ship objects as parameter
-        // this adds the array of ship objects after the locations are generated for the ai 
-        // or chosen by the player
 
-    // Populating Cell data arrays
-            // cells with a ship that is 'healthy' - set via the array of ship objects 
-            // cells with a ship that has been hit - stays as empty no code needed
-            // cells that are empty (with no ship and have not yet been shot at) - set in same loop that sets healthy ship array
-            // cells that are misses (no ship and have been shot at) - stays as empty no code needed
+    // this might be redundant with tableObject.cells[x][y]
+    // i finished it so im going to keep it for now
+    returnCell(x, y){ // returns the cell object given the coordinates of the cell
+        let cellToReturn;
+        this.cells.forEach(function(row){ // looks through each row
+            cellToReturn = row.find(function(cell){ 
+                return cell.cellNameValue.x === x && cell.cellNameValue.y === y; // finds cell that has the same coordinates
+            });
+        });
+        return cellToReturn;
+    }
 
-    // Returns coords of cell object passed as parameter - using 10x10 array
-    // Returns cell object of given coord - using 10x10 array
-    // Returns its ship object of given ship name - string parameter
+    returnShip(shipName){ // returns the tables ship object given a matching ship name 
+        return this.ships.find(function(ship){
+            return ship.name === shipName;
+        });
+    }
 
-    // Method to process a shot from the opponent
-    // Uses the arrays of cells to check
-        // Parameters
-            // Cell object
-        // if cell has been hit or missed before
-            // returns null and exits function
-        // if cell is empty
-            // pop Cell from empty Cell array
-            // push coCellrds to missed Cell array
-            // call miss method of cell object
-            // return false and exits function
-        // if cell is 'healthy'
-            // pop Cell from healthy Cell array
-            // push Cell to hit Cell array
-            // find ship object that was hit from array of ship objects
-            // call hit function on ship object that was hit
-                // NOTE: this will also call the hit function on the cell
-            // if ships hit function returns true
-                // call on non-class method to display the sunk ship on the ship status part of the HTML
-                // this will probably need isHuman and the Ship object as args
-            // return true and exit function
+    processShot(cell){ // this method processes a shot by either player onto their opponent taking a cell object as its parameter
+        //it returns a number value depending on the result as well as dealing with the logic of the results of the shot
+        if(this.hitShipCells.includes(cell) || this.missedShipCells.includes(cell)){
+            return 0; // returns 0 if the cell has already been hit or missed
+        }
+        else if(this.emptyCells.includes(cell)){ // if this cell is empty (no ship)
+            this.emptyCells = this.emptyCells.filter(emptyCell => emptyCell !== cell);
+            this.missedCells.push(cell); // removes cell from emptyCell array and adds it to missedCell array
+            cell.miss(); // calls the cells miss function
+            return 1; // returns 1 indicating a miss
+        }
+        else{ // if this cell has a ship that is healthy
+            this.healthyShipCells = this.healthyShipCells.filter(healthyShipCell => healthyShipCell !== cell); 
+            this.healthyShipCells.push(cell); // removes from healthyShips array and adds to hitShips array
+            let isSunk = this.ships.find(ship => ship.locations.includes(cell)).hit(cell); // finds the ship that was hit
+            if(isSunk){
+                this.shipsSunk++; // increases counter for sunk ships
+                // TODO: update HTML element for sunk ship
+                if(this.shipsSunk === 5){ // checks if all ships are sunk
+                    // TODO: this ends the game
+                    return 4; // returns 4 indicating all ships now sunk
+                }
+                return 3; // returns 3 indicating a ship sunk but not all ships sunk
+            }
+            return 2; // returns 2 indicating a hit but no sink
+        }
+    }
 }
 
 class Cell{ // class to represent a single cell - like ship it belongs to a table
     // this is where the visual effects are applied via the classList property and css
-    constructor(cellElement, isHuman, cellName){
+    constructor(cellElement, isHuman, cellNameValue){
         this.cellElement = cellElement; // the HTML element tied to the object
         this.isHuman = isHuman; // if the player is Human
-        this.cellName = cellName; // object with the coordinates represented as numbers and as a string (from CELLNAMEVALUES array)
+        this.cellNameValue = cellNameValue; // object with the coordinates represented as numbers and as a string (from CELLNAMEVALUES array)
         this.type = ''; // the Name of the ship in this cell, if there is one
         if(this.isHuman){
-            this.cellElement.classList.add('water'); // sets the initial style of a humans cell to be empty water
+            this.cellElement.classList.add('water'); // TODO: sets the initial style of a humans cell to be empty water
         }
         else{
-            this.cellElement.classList.add('fog-of-war'); // sets the intial style of an AIs cell to be fog-of-war
+            this.cellElement.classList.add('fog-of-war'); // TODO: sets the intial style of an AIs cell to be fog-of-war
         }
     }
 
@@ -179,8 +218,8 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         this.type = name;
         if(this.isHuman){
             this.cellElement.classList.remove('water'); // changes style from empty water to a healthy ship if on players board
-            this.cellElement.classList.add('healthy-ship');
-            this.cellElement.textContent = type; // also adds text of ship type on player board
+            this.cellElement.classList.add('healthy-ship'); // TODO:
+            this.cellElement.textContent = type.slice(0,1); // also adds text of ship type on player board
         }
     }
 
@@ -190,9 +229,9 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         }
         else{
             this.cellElement.classList.remove('fog-of-war');
-            this.cellElement.textContent = '??????'; // adds texts indicating unknown type of ship if on ai board
+            this.cellElement.textContent = '?'; // adds texts indicating unknown type of ship if on ai board
         }
-        this.cellElement.classList.add('hit-ship'); // changes cell style to hit ship 
+        this.cellElement.classList.add('hit-ship'); // TODO: changes cell style to hit ship 
     }
 
     miss(){ // this method handles a player missing in this cell
@@ -202,32 +241,19 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         else{
             this.cellElement.classList.remove('fog-of-war');
         }
-        this.cellElement.classList.add('miss'); // changes cell style to miss
+        this.cellElement.classList.add('miss'); // TODO: changes cell style to miss
     }
 
     sunk(){ // this method fires when the ship on this cell is sunk
-        this.cellElement.classList.remove('hit-ship');
-        this.cellElement.classList.add('sunk-ship'); // changes cell style to sunk ship
-        this.cellElement.textContent = this.type; // sets cell text as the ships type
+        this.cellElement.classList.remove('hit-ship'); 
+        this.cellElement.classList.add('sunk-ship'); // TODO: changes cell style to sunk ship
+        this.cellElement.textContent = this.type.slice(0,1); // sets cell text as the ships type
     }
 }
 
 
-// Cache HTML Elements
-
-    // Humans board
-    // Players board
-
-    // Instruction panel
-
-    // 'Admin' Panel
-        // Error display
-        // radio inputs for horizontal or vertical (these are grouped)
-
-
-
 // non class functions
-    // place ai ships
+    // place ai ships TODO:
         // arguments
             // takes array of ship objects
             // takes table object
@@ -239,18 +265,18 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
         // assigns ship objects to ai table object
         // calls ai table object method to populate cell data arrays
 
-    // update text element
+    // update text element TODO:
         // takes html element
         // takes string
         // displays string as text in said element
 
-    // set input
+    // set input TODO:
         // takes input element
         // takes boolean
         // clears prior value of input
         // sets active status to boolean value
 
-    // returnCellRelative
+    // returnCellRelative TODO:
         // takes table
         // takes cell
         // takes relative x
@@ -265,33 +291,26 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
     }
 
 // Initialize
-    // Set starting values to what they should be 
+ 
+    // Set starting values to what they should be  TODO:
 
+function initialize(){
 
-    // Construct table objects
-        // Human board
-            // isHuman true
-            // HTML element
-
-        // AI board
-            // isHuman false
-            // HTML element
-
+    let humanTable = new Table(true, humanTableElement);
+    let aiTable = new Table(false, aiTableElement);
     // at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
 
-    // Construct Ship objects
-        // create empty array for human and one for ai
-        // forEach through ship constant global array
-            // Construct ships
-                // Human shipX
-                    // Ship object
-                    // isHuman true
-                    // human board
-                // Ai shipx
-                    // ship Object
-                    // isHuman false
-                    // ai board
-            // push each new ship object to corresponding array
+    let humanShips = [];
+    let aiShips = [];
+
+    SHIPVALUES.forEach(function(shipValue){
+        let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
+        let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
+        humanShips.push(humanShipBeingConstructed);
+        aiShips.push(aiShipBeingConstructed);
+    });
+
+
 
     // at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
     // and have empty location values
@@ -352,3 +371,7 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
     // set radio values as not active
     // call method to populate human table arrays
 
+}
+
+
+initialize();
