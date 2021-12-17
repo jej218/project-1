@@ -37,6 +37,9 @@ let verticalRadioElement = document.querySelector('#orientation-vertical');
 let horizontalRadioElement = document.querySelector('#orientation-horizontal');
 let instructionElement = document.querySelector('.error-section');
 let submitButtonElement = document.querySelector('.submit-button');
+let humanSquares = document.querySelectorAll('.human-square');
+let humanScore = document.querySelector('#human-record');
+let aiScore = document.querySelector('#ai-record');
 
 
 class Ship { // Ship Class - represents an individual ship and its status vis a vis the game
@@ -81,7 +84,6 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
             this.locations.push(holderCell); // pushes to locations array
             holderCell.placeShip(this.name); // calls the cells placeShip method with this ships name as argument
         }
-        console.log(this.statusSquares);
     }
      
     setVerticalTo(isVertical){ // simple setter method for the ships isVertical variable
@@ -104,6 +106,15 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
             return true; // tells invoker that ship did sink
         }
         else {
+            if(this.isHuman){
+                let cellConditions = this.conditions;
+                console.log(cellConditions);
+                this.statusSquares.forEach(function(square, i){
+                    if(cellConditions[i]){
+                        square.classList.add('hit-ship');
+                    }
+                });
+            }
             return false; // tells invoker ship didnt sink
         }
     }
@@ -193,12 +204,18 @@ class Table{ // the table class represents a game board for a player - but also 
     processShot(cell){ // this method processes a shot by either player onto their opponent taking a cell object as its parameter
         //it returns a number value depending on the result as well as dealing with the logic of the results of the shot
         if(this.hitShipCells.includes(cell) || this.missedCells.includes(cell)){
+            if(!this.isHuman){
+                updateTextElement(instructionElement, 'This cell has already been targeted. Please choose another');
+            }
             return 0; // returns 0 if the cell has already been hit or missed
         }
         else if(this.emptyCells.includes(cell)){ // if this cell is empty (no ship)
             this.emptyCells = this.emptyCells.filter(emptyCell => emptyCell !== cell);
             this.missedCells.push(cell); // removes cell from emptyCell array and adds it to missedCell array
             cell.miss(); // calls the cells miss function
+            if(!this.isHuman){
+                updateTextElement(instructionElement, 'You missed your shot!');
+            }
             return 1; // returns 1 indicating a miss
         }
         else{ // if this cell has a ship that is healthy
@@ -207,12 +224,17 @@ class Table{ // the table class represents a game board for a player - but also 
             let isSunk = this.ships.find(ship => ship.locations.includes(cell)).hit(cell); // finds the ship that was hit
             if(isSunk){
                 this.shipsSunk++; // increases counter for sunk ships
-                // TODO: update HTML element for sunk ship
                 if(this.shipsSunk === 5){ // checks if all ships are sunk
-                    // TODO: this ends the game
+                    gameEnd(!this.isHuman);
                     return 4; // returns 4 indicating all ships now sunk
                 }
+                if(!this.isHuman){
+                    updateTextElement(instructionElement, 'You sunk a ' + cell.type);
+                }
                 return 3; // returns 3 indicating a ship sunk but not all ships sunk
+            }
+            if(!this.isHuman){
+                updateTextElement(instructionElement, 'You hit a ship');
             }
             return 2; // returns 2 indicating a hit but no sink
         }
@@ -247,6 +269,7 @@ class Cell{ // class to represent a single cell - like ship it belongs to a tabl
     hit(){  // this method handles a ship in this cell being hit
         if(this.isHuman){
             this.cellElement.classList.remove('healthy-ship');
+
         }
         else{
             this.cellElement.classList.remove('fog-of-war');
@@ -363,30 +386,30 @@ function removeClassFromCells(cells, className){
 }
 
 
-verticalRadioElement.disabled = false;
-horizontalRadioElement.disabled = false;
-horizontalRadioElement.checked = true;
-submitButtonElement.disabled = true;
-updateTextElement(errorElement, '');
+    verticalRadioElement.disabled = false;
+    horizontalRadioElement.disabled = false;
+    horizontalRadioElement.checked = true;
+    submitButtonElement.disabled = true;
+    updateTextElement(errorElement, '');
 
 
-let humanTable = new Table(true, humanTableElement);
-let aiTable = new Table(false, aiTableElement);
-// at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
+    let humanTable = new Table(true, humanTableElement);
+    let aiTable = new Table(false, aiTableElement);
+    // at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
 
-let humanShips = [];
-let aiShips = [];
+    let humanShips = [];
+    let aiShips = [];
 
-SHIPVALUES.forEach(function(shipValue){
-    let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
-    let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
-    humanShips.push(humanShipBeingConstructed);
-    aiShips.push(aiShipBeingConstructed);
-});
+    SHIPVALUES.forEach(function(shipValue){
+        let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
+        let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
+        humanShips.push(humanShipBeingConstructed);
+        aiShips.push(aiShipBeingConstructed);
+    });
+    placeAiShips(aiShips, aiTable);
 // at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
 // and have empty location values
 
-placeAiShips(aiShips, aiTable);
 // at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
 // now the player must place their ships
 
@@ -546,4 +569,14 @@ function buttonPress() {
     updateTextElement(instructionElement, message);
     checkerArray = [];
     return;
+}
+
+function gameEnd(didHumanWin) {
+    if(didHumanWin){
+        updateTextElement(humanScore, 'Your wins: 1');
+    } 
+    else{
+        updateTextElement(aiScore, 'Ai wins: 1');
+    }  
+
 }
