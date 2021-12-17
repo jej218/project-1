@@ -21,7 +21,7 @@ main {
 }
 
 .board-header {
-    background-color: chartreuse;
+    background-color: seagreen;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -105,15 +105,12 @@ main {
 }
 
 #info-panel {
-    background-color: blue;
+    background-color: cornflowerblue;
     grid-area: info-area;
     display: grid;
     grid-template-rows: 7fr 1fr 1fr 1fr 2fr;
     align-items: stretch;
     justify-items: stretch;
-}
-.info-section {
-    background-color: blueviolet;
 }
 #ship-status {
     display: grid;
@@ -135,7 +132,6 @@ main {
     font-size: 2vw;
 }
 .status-list {
-    background-color: cadetblue;
     grid-row-start: 3;
     border: 1px solid black;
     display: grid;
@@ -143,7 +139,6 @@ main {
 }
 .human-status, .ai-status {
     display: flex;
-    background-color: green;
     justify-content: space-evenly;
 }
 .human-square, .ai-square {
@@ -184,7 +179,6 @@ label {
 }
 #instructions {
     grid-row-start: 5;
-    background-color: brown;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
