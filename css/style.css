@@ -42,7 +42,7 @@ main {
     grid-area: ai-header;
 }
 .board {
-    background-color: lightgray;
+    background-color: blue;
     aspect-ratio: 1;
 }
 #human-board {

@@ -1,48 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer src='js/script.js'></script>
-    <title>Project 1</title>
-    <link rel='stylesheet' href='css/style.css' type='text/css' />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script defer src='js/script.js'></script>
+  <title>Project 1</title>
+  <link rel='stylesheet' href='css/style.css' type='text/css' />
 </head>
+
 <body>
+  <!--This is the Page header bar-->
   <header class='page-header'>
-      <h1>Battleship</h1>
-      <h3>by John Jasinski</h3>
+    <h1>Battleship</h1>
+    <h3>by John Jasinski</h3>
   </header>
+  <!--This is the 'Game Board' section-->
   <main>
+    <!--This is the header for the player's section of the board-->
     <header class='board-header' id='human-board-header'>
-        Your Board
+      Your Board
     </header>
+    <!--This is the player's board-->
     <div class='board' id='human-board'>
-      <div class = 'table' id='human-table'>
-      </div>
-      <section class='left' id='human-left'>
-      </section>
+      <!--This is the player's table-->
+      <div class='table' id='human-table'></div>
+      <!--These are the borders on each side of the table-->
+      <section class='left' id='human-left'></section>
       <section class='top' id='human-top'> </section>
-     <section class='right' id='human-right'> </section>
-     <section class='bottom' id='human-bottom'> </section>
+      <section class='right' id='human-right'> </section>
+      <section class='bottom' id='human-bottom'> </section>
     </div>
 
+    <!--This is the header for the 'Info Panel' section-->
     <header id='info-header'>
-        Settings & Info
+      Settings & Info
     </header>
+    <!--This is the info panel section-->
     <div id='info-panel'>
+      <!--This is the ship status section in the info panel-->
       <div class='info-section' id='ship-status'>
+        <!--This is the header for the ship status section-->
         <div class='status-title' id='status-main-title'>
           Ship Status
         </div>
+        <!--These are the sub-headers for the ship status sections-->
         <div class='status-title status-subtitle' id='human-status-header'>
           You
         </div>
         <div class='status-title status-subtitle' id='ai-status-header'>
           Computer
         </div>
+        <!--These are the displays of the ship statuses for the players-->
         <div class='status-list'>
+          <!--Each of these is a container for one ship-->
           <div class='human-status'>
+            <!--Each of these is one of the squares for the corresponding ship-->
             <div class='human-square' id='aircraft-carrier'>A</div>
             <div class='human-square' id='aircraft-carrier'>A</div>
             <div class='human-square' id='aircraft-carrier'>A</div>
@@ -100,6 +114,8 @@
           </div>
         </div>
       </div>
+
+      <!--This is the display for the record-->
       <div class='info-section' id='records'>
         <div class='record-section' id='human-record'>
           Your wins:
@@ -108,45 +124,51 @@
           Computer wins:
         </div>
       </div>
+
+      <!--This is the section that contains elements for user interaction-->
       <div class='info-section' id='input-area'>
+        <!--This section contains the 'multiple choice' style options for ship placement-->
         <div class='radio-section'>
           <input type="radio" name='orientation' class='orientation' id='orientation-vertical' value='true'>
           <label for='orientation-vertical'>Vertical</label>
           <input type="radio" name='orientation' class='orientation' id='orientation-horizontal' value='false'>
           <label for='orientation-horizontal'>Horizontal</label>
         </div>
+        <!--This is the button to confirm ship placement-->
         <input type='button' value='Submit Ship' class='submit-button' disabled='true'>
       </div>
+      <!--This is the section that displays error messages in case of user error-->
       <div class='info-section' id='instructions'>
         <div id='instructions-header'>
           Error Message:
         </div>
         <div id='instructions-content'>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit.
         </div>
       </div>
     </div>
-
+    <!--This is the section for the computer's board-->
     <header class='board-header' id='ai-board-header'>
-        The Computer's Board
+      The Computer's Board
     </header>
     <div class='board' id='ai-board'>
-      <div class = 'table' id='ai-table'>
-
+      <div class='table' id='ai-table'>
       </div>
       <section class='left' id='ai-left'> </section>
       <section class='top' id='ai-top'> </section>
       <section class='right' id='ai-right'> </section>
       <section class='bottom' id='ai-bottom'> </section>
     </div>
-
-    
   </main>
-
 </body>
+
+<!--This is the footer, used to display instructions-->
 <footer>
   <div class='error-section'>
-    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa architecto sunt itaque saepe ipsa assumenda dicta! Officia numquam reprehenderit suscipit perspiciatis consequuntur unde! Itaque accusantium officiis magnam quisquam deserunt aperiam.
+    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa architecto sunt itaque saepe ipsa assumenda dicta!
+    Officia numquam reprehenderit suscipit perspiciatis consequuntur unde! Itaque accusantium officiis magnam quisquam
+    deserunt aperiam.
   </div>
 </footer>
+
 </html>
