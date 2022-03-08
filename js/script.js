@@ -1,25 +1,25 @@
 
 // Array of Ship Values as object
-const SHIPVALUES = [{name: 'aircraft-carrier', length: 5}, {name: 'battleship', length: 4}, {name: 'submarine', length: 3}, {name: 'cruiser', length: 3}, {name: 'destroyer', length: 2}];
+const SHIPVALUES = [{ name: 'aircraft-carrier', length: 5 }, { name: 'battleship', length: 4 }, { name: 'submarine', length: 3 }, { name: 'cruiser', length: 3 }, { name: 'destroyer', length: 2 }];
 
 // Double Array of all of the Cell Names as strings
 const CELLNAMES = [['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8', 'a9', 'a10'],
-    ['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9', 'b10'],
-    ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10'],
-    ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9', 'd10'],
-    ['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'e10'],
-    ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10'],
-    ['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10'],
-    ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8', 'h9', 'h10'],
-    ['i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'i7', 'i8', 'i9', 'i10'],
-    ['j1', 'j2', 'j3', 'j4', 'j5', 'j6', 'j7', 'j8', 'j9', 'j10']];
+['b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9', 'b10'],
+['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10'],
+['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9', 'd10'],
+['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9', 'e10'],
+['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10'],
+['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7', 'g8', 'g9', 'g10'],
+['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h7', 'h8', 'h9', 'h10'],
+['i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'i7', 'i8', 'i9', 'i10'],
+['j1', 'j2', 'j3', 'j4', 'j5', 'j6', 'j7', 'j8', 'j9', 'j10']];
 
 // Double Array of Cell info as objects - one value name from CELLNAMES - one value column coord - one value row coord
 // This was done to avoid typing out all of the values for each 100 objects
 const CELLNAMEVALUES = [];
-CELLNAMES.forEach(function(row, rowCounter){
+CELLNAMES.forEach(function (row, rowCounter) {
     let placeHolderRow = [];
-    row.forEach(function(cell, columnCounter){
+    row.forEach(function (cell, columnCounter) {
         let placeHolderCell = {};
         placeHolderCell.name = cell;
         placeHolderCell.rowCoord = rowCounter;
@@ -43,7 +43,7 @@ let aiScore = document.querySelector('#ai-record');
 
 
 class Ship { // Ship Class - represents an individual ship and its status vis a vis the game
-    constructor(shipValue, table, isHuman){
+    constructor(shipValue, table, isHuman) {
         this.shipValue = shipValue; // from SHIPVALUES
         this.table = table; // matching table object
         this.isHuman = isHuman; // does this belong to the human player
@@ -52,65 +52,65 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
         this.isSunk = false; // if the ship has been sunk
         this.isVertical = false; // if the ship is vertical (for placement of ship)
         this.conditions = []; // representation of if each cell in the chip is hit
-        this.conditions.length = this.length; 
+        this.conditions.length = this.length;
         this.conditions.fill(false); // initialized as false
         this.locations = []; // representation of the cell objects where the ship is located
         let squares = document.querySelectorAll(`#${this.name}`);
         this.statusSquares = [];
-        for (let i = 0; i < squares.length; i++){
-            if(isHuman){
-                if(squares[i].className === 'human-square'){
+        for (let i = 0; i < squares.length; i++) {
+            if (isHuman) {
+                if (squares[i].className === 'human-square') {
                     this.statusSquares.push(squares[i]);
                 }
             }
-            else{
-                if(squares[i].className === 'ai-square'){
+            else {
+                if (squares[i].className === 'ai-square') {
                     this.statusSquares.push(squares[i]);
                 }
             }
         }
     }
 
-    placeShip(firstCell){ // establishes the locations array for this ship
+    placeShip(firstCell) { // establishes the locations array for this ship
         // the parameter is the leftmost or topmost cell
         let holderCell;
-        for(let i = 0; i < this.length; i++){ // iterates once for each cell of the ship
-            if(this.isVertical){
+        for (let i = 0; i < this.length; i++) { // iterates once for each cell of the ship
+            if (this.isVertical) {
                 holderCell = returnCellRelative(this.table, firstCell, i, 0); // sets the cell variable along the row axis
             }
-            else{
+            else {
                 holderCell = returnCellRelative(this.table, firstCell, 0, i); // sets the cell variable along the column axis
             }
             this.locations.push(holderCell); // pushes to locations array
             holderCell.placeShip(this.name); // calls the cells placeShip method with this ships name as argument
         }
     }
-     
-    setVerticalTo(isVertical){ // simple setter method for the ships isVertical variable
+
+    setVerticalTo(isVertical) { // simple setter method for the ships isVertical variable
         this.isVertical = isVertical;
     }
 
-    hit(cell){  // function to hand a cell on this ship getting hit. It is passed from this ship's table
+    hit(cell) {  // function to hand a cell on this ship getting hit. It is passed from this ship's table
         // the parameter is the cell that was hit
         this.conditions[this.locations.findIndex(location => location === cell)] = true; // this sets the value of the conditions array that matches with 
         // the hit cell to be true
         cell.hit();  // this calls the cells hit function
-        if(this.conditions.every(condition => condition === true)){ // if all values in conditions are true (all cells are hit)
+        if (this.conditions.every(condition => condition === true)) { // if all values in conditions are true (all cells are hit)
             this.isSunk = true;
-            this.locations.forEach(function(location){ // calls cells sunk method for all cells in ship
+            this.locations.forEach(function (location) { // calls cells sunk method for all cells in ship
                 location.sunk();
             });
-            this.statusSquares.forEach(function(square){
+            this.statusSquares.forEach(function (square) {
                 square.classList.add('sunk-ship');
             })
             return true; // tells invoker that ship did sink
         }
         else {
-            if(this.isHuman){
+            if (this.isHuman) {
                 let cellConditions = this.conditions;
                 console.log(cellConditions);
-                this.statusSquares.forEach(function(square, i){
-                    if(cellConditions[i]){
+                this.statusSquares.forEach(function (square, i) {
+                    if (cellConditions[i]) {
                         square.classList.add('hit-ship');
                     }
                 });
@@ -120,10 +120,10 @@ class Ship { // Ship Class - represents an individual ship and its status vis a 
     }
 }
 
-class Table{ // the table class represents a game board for a player - but also contains a lot of the working information
+class Table { // the table class represents a game board for a player - but also contains a lot of the working information
     // about the state of the game - it contains as variables the ships and cells that are a part of it, and handles
     // most of the logic regarding the display of the boards.
-    constructor(isHuman, tableElement){
+    constructor(isHuman, tableElement) {
         this.isHuman = isHuman;
         this.tableElement = tableElement; // the HTML element containing the board that the table represents
         this.ships = []; // an array of all of the ship objects on this player's board - empty before ships are placed
@@ -132,9 +132,9 @@ class Table{ // the table class represents a game board for a player - but also 
         // this is a block of code that creates the cells within the table
         // both the HTML element and the JS Object are created within the table constructor
         let cellsUnderConstruction = [];
-        CELLNAMEVALUES.forEach(function(row, i){ // parse through CELLNAMEVALUES for proper 10by10 format and data availability
+        CELLNAMEVALUES.forEach(function (row, i) { // parse through CELLNAMEVALUES for proper 10by10 format and data availability
             let rowUnderConstruction = [];
-            row.forEach(function(cell, j){
+            row.forEach(function (cell, j) {
                 let divUnderConstruction = document.createElement('div');
                 divUnderConstruction.classList.add('cell'); // creates new div and adds cell class 
                 divUnderConstruction.id = CELLNAMEVALUES[i][j].name; // new div's id is its Letter-Number coords, for easy reference
@@ -158,24 +158,24 @@ class Table{ // the table class represents a game board for a player - but also 
         this.missedCells = []; // represents the missed cells - stays empty during initialization
     }
 
-    setAShip(ship, cell){ // adds a ship to the ship array and places it for the Ship object
+    setAShip(ship, cell) { // adds a ship to the ship array and places it for the Ship object
         // note that this must be done in ship order (as in global constant)
         this.ships.push(ship);
         ship.placeShip(cell);
     }
 
-    fillCellArrays(){ // fills up the arrays of cells after ships array has been set
+    fillCellArrays() { // fills up the arrays of cells after ships array has been set
         let healthyCellsToPush = [];
-        this.ships.forEach(function(ship){
-            ship.locations.forEach(function(location){
+        this.ships.forEach(function (ship) {
+            ship.locations.forEach(function (location) {
                 healthyCellsToPush.push(location);
             });
         });
         this.healthyShipCells = healthyCellsToPush; // adds each cell of each ship to the array
         let emptyCellsToPush = [];
-        this.cells.forEach(function(row){
-            row.forEach(function(cell){
-                if(healthyCellsToPush.includes(cell) === false){
+        this.cells.forEach(function (row) {
+            row.forEach(function (cell) {
+                if (healthyCellsToPush.includes(cell) === false) {
                     emptyCellsToPush.push(cell); // looks through all cells in all the rows in the table and adds cell to array if its not a ship
                 }
             });
@@ -183,143 +183,143 @@ class Table{ // the table class represents a game board for a player - but also 
         this.emptyCells = emptyCellsToPush;
     }
 
-    processShot(cell){ // this method processes a shot by either player onto their opponent taking a cell object as its parameter
+    processShot(cell) { // this method processes a shot by either player onto their opponent taking a cell object as its parameter
         //it returns a number value depending on the result as well as dealing with the logic of the results of the shot
-        if(this.hitShipCells.includes(cell) || this.missedCells.includes(cell)){
-            if(!this.isHuman){
+        if (this.hitShipCells.includes(cell) || this.missedCells.includes(cell)) {
+            if (!this.isHuman) {
                 updateTextElement(instructionElement, 'This cell has already been targeted. Please choose another');
             }
             return 0; // returns 0 if the cell has already been hit or missed
         }
-        else if(this.emptyCells.includes(cell)){ // if this cell is empty (no ship)
+        else if (this.emptyCells.includes(cell)) { // if this cell is empty (no ship)
             this.emptyCells = this.emptyCells.filter(emptyCell => emptyCell !== cell);
             this.missedCells.push(cell); // removes cell from emptyCell array and adds it to missedCell array
             cell.miss(); // calls the cells miss function
-            if(!this.isHuman){
+            if (!this.isHuman) {
                 updateTextElement(instructionElement, 'You missed your shot!');
             }
             return 1; // returns 1 indicating a miss
         }
-        else{ // if this cell has a ship that is healthy
+        else { // if this cell has a ship that is healthy
             this.healthyShipCells.splice(this.healthyShipCells.indexOf(cell), 1);
             this.hitShipCells.push(cell); // removes from healthyShips array and adds to hitShips array
             let isSunk = this.ships.find(ship => ship.locations.includes(cell)).hit(cell); // finds the ship that was hit
-            if(isSunk){
+            if (isSunk) {
                 this.shipsSunk++; // increases counter for sunk ships
-                if(this.shipsSunk === 5){ // checks if all ships are sunk
+                if (this.shipsSunk === 5) { // checks if all ships are sunk
                     gameEnd(!this.isHuman);
                     return 4; // returns 4 indicating all ships now sunk
                 }
-                if(!this.isHuman){
+                if (!this.isHuman) {
                     updateTextElement(instructionElement, 'You sunk a ' + cell.type);
                 }
                 return 3; // returns 3 indicating a ship sunk but not all ships sunk
             }
-            if(!this.isHuman){
+            if (!this.isHuman) {
                 updateTextElement(instructionElement, 'You hit a ship');
             }
             return 2; // returns 2 indicating a hit but no sink
         }
     }
 }
-class Cell{ // class to represent a single cell - like ship it belongs to a table
+class Cell { // class to represent a single cell - like ship it belongs to a table
     // this is where the visual effects are applied via the classList property and css
-    constructor(cellElement, isHuman, cellNameValue){
+    constructor(cellElement, isHuman, cellNameValue) {
         this.cellElement = cellElement; // the HTML element tied to the object
         this.isHuman = isHuman; // if the player is Human
         this.cellNameValue = cellNameValue; // object with the coordinates represented as numbers and as a string (from CELLNAMEVALUES array)
         this.type = ''; // the Name of the ship in this cell, if there is one
-        if(this.isHuman){
+        if (this.isHuman) {
             this.cellElement.classList.add('water'); // sets the initial style of a humans cell to be empty water
         }
-        else{
+        else {
             this.cellElement.classList.add('fog-of-war'); // sets the intial style of an AIs cell to be fog-of-war
         }
     }
 
-    placeShip(name){ // this method handles placing a ship in this cell
+    placeShip(name) { // this method handles placing a ship in this cell
         // it is called by the ship object being placed, which passes its name as a parameter
         this.type = name;
-        if(this.isHuman){
+        if (this.isHuman) {
             this.cellElement.classList.remove('water'); // changes style from empty water to a healthy ship if on players board
             this.cellElement.classList.add('healthy-ship');
-            this.cellElement.textContent = this.type.slice(0,1); // also adds text of ship type on player board
+            this.cellElement.textContent = this.type.slice(0, 1); // also adds text of ship type on player board
         }
     }
 
-    hit(){  // this method handles a ship in this cell being hit
-        if(this.isHuman){
+    hit() {  // this method handles a ship in this cell being hit
+        if (this.isHuman) {
             this.cellElement.classList.remove('healthy-ship');
 
         }
-        else{
+        else {
             this.cellElement.classList.remove('fog-of-war');
             this.cellElement.textContent = '?'; // adds texts indicating unknown type of ship if on ai board
         }
-        this.cellElement.classList.add('hit-ship'); 
+        this.cellElement.classList.add('hit-ship');
     }
 
-    miss(){ // this method handles a player missing in this cell
-        if(this.isHuman){
+    miss() { // this method handles a player missing in this cell
+        if (this.isHuman) {
             this.cellElement.classList.remove('water');
         }
-        else{
+        else {
             this.cellElement.classList.remove('fog-of-war');
         }
-        this.cellElement.classList.add('miss'); 
+        this.cellElement.classList.add('miss');
     }
 
-    sunk(){ // this method fires when the ship on this cell is sunk
-        this.cellElement.classList.remove('hit-ship'); 
-        this.cellElement.classList.add('sunk-ship'); 
-        this.cellElement.textContent = this.type.slice(0,1); // sets cell text as the ships type
+    sunk() { // this method fires when the ship on this cell is sunk
+        this.cellElement.classList.remove('hit-ship');
+        this.cellElement.classList.add('sunk-ship');
+        this.cellElement.textContent = this.type.slice(0, 1); // sets cell text as the ships type
     }
 }
 
 
 // non class functions
 
-function placeAiShips(aiShips, aiTable){ // this function handles the placement of the AI ships
+function placeAiShips(aiShips, aiTable) { // this function handles the placement of the AI ships
     // the parameters are an array of ships, and the table object
     // the placemnt is done randomly via trial and error - a possible addition could add strategy to placement
-    aiShips.forEach(function(ship){
-        while(ship.locations.length === 0){ 
+    aiShips.forEach(function (ship) {
+        while (ship.locations.length === 0) {
             let randRow = Math.floor(Math.random() * 10); // 2 random numbers 0-9 for the coordinates, 1 random number 0-1 to determine orientation
             let randColumn = Math.floor(Math.random() * 10);
             let randOrientation = Math.floor(Math.random() * 2);
             ship.setVerticalTo(Boolean(randOrientation)); // sets the ships verticality to true if 1, false if 0
             let startCell = aiTable.cells[randRow][randColumn]; // grabs the cell with the random coordinates
-            if(isShipPlacementValid(startCell, ship, aiTable) === 0){
+            if (isShipPlacementValid(startCell, ship, aiTable) === 0) {
                 aiTable.setAShip(ship, startCell);
             }
-        } 
+        }
     });
     aiTable.fillCellArrays();
 }
 
-function isShipPlacementValid(cell, ship, table){ // function to check for validity of ship placement
+function isShipPlacementValid(cell, ship, table) { // function to check for validity of ship placement
     // takes as parameters the cell of top or leftmost cell in ship (the cell picked by human or ai),
     // the ship object being placed, and the table its being placed on
     let cellToCheck;
-    for(let i = 0; i < ship.length; i++){ // checks as many cells as the length of the ship
-        if(ship.isVertical){
+    for (let i = 0; i < ship.length; i++) { // checks as many cells as the length of the ship
+        if (ship.isVertical) {
             cellToCheck = returnCellRelative(table, cell, i, 0); // sets the cell to check if the ship is vertical
-            if(cellToCheck === undefined){
+            if (cellToCheck === undefined) {
                 return 1;
-            } 
-            else if(table.ships.some(e => e.locations.includes(cellToCheck))){
+            }
+            else if (table.ships.some(e => e.locations.includes(cellToCheck))) {
                 // this occurs if the cell is undefined (not in the 10by10) or is already placed
                 // the second check has to check the ship object's locations array because the table
                 // object's cell arrays have not yet been defined
                 return 2;
             }
         }
-        else{
+        else {
             cellToCheck = returnCellRelative(table, cell, 0, i)  // sets the cell to check if the ship is horizontal
-            if(cellToCheck === undefined){
+            if (cellToCheck === undefined) {
                 return 1;
             }
-            else if(table.ships.some(e => e.locations.includes(cellToCheck))){
+            else if (table.ships.some(e => e.locations.includes(cellToCheck))) {
                 return 2;
             }
         }
@@ -327,112 +327,112 @@ function isShipPlacementValid(cell, ship, table){ // function to check for valid
     return 0; // final return statement if each potential cell passes the checks
 }
 
-function updateTextElement(element, message){
+function updateTextElement(element, message) {
     element.textContent = message;
 }
 
-function generateAIMoveDumb(){
+function generateAIMoveDumb() {
     let targetIsGood = false;
-    while(!targetIsGood){
+    while (!targetIsGood) {
         let randRow = Math.floor(Math.random() * 10);
         let randColumn = Math.floor(Math.random() * 10);
-        if(humanTable.processShot(humanTable.cells[randRow][randColumn]) !== 0){
+        if (humanTable.processShot(humanTable.cells[randRow][randColumn]) !== 0) {
             targetIsGood = true;
         }
     }
     return;
 }
 
-function returnCellRelative(table, cell, relRow, relColumn){ // returns the relative cell given a table, cell, and relative row and column coordinates
+function returnCellRelative(table, cell, relRow, relColumn) { // returns the relative cell given a table, cell, and relative row and column coordinates
     let initRow = cell.cellNameValue.rowCoord;
     let initColumn = cell.cellNameValue.columnCoord;
-    if(initRow+relRow > 9 || initColumn+relColumn > 9){ // checks for invalid cell to prevent error
+    if (initRow + relRow > 9 || initColumn + relColumn > 9) { // checks for invalid cell to prevent error
         return undefined; // returns undefined if cell is invalid
     }
-    else{
+    else {
         return table.cells[initRow + relRow][initColumn + relColumn];
     }
 }
 
-function addClassToCells(cells, className){
-    cells.forEach(function(cell){
+function addClassToCells(cells, className) {
+    cells.forEach(function (cell) {
         cell.cellElement.classList.add(className);
     });
 }
 
-function removeClassFromCells(cells, className){
-    cells.forEach(function(cell){
+function removeClassFromCells(cells, className) {
+    cells.forEach(function (cell) {
         cell.cellElement.classList.remove(className);
     });
 }
 
 
-    
-    let humanTable;
-    let aiTable;
-    let humanShips;
-    let aiShips;
-    let checkerArray;
-    let submitBoolean;
-    let shipCounter;
-    let currentShip;
-    function initialize(){
-        humanShips = [];
-        aiShips = [];
-        verticalRadioElement.disabled = false;
-        horizontalRadioElement.disabled = false;
-        horizontalRadioElement.checked = true;
-        submitButtonElement.disabled = true;
-        updateTextElement(errorElement, '');
-        updateTextElement(instructionElement, '');
-        humanTable = new Table(true, humanTableElement);
-        aiTable = new Table(false, aiTableElement);
-        // at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
-        SHIPVALUES.forEach(function(shipValue){
-            let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
-            let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
-            humanShips.push(humanShipBeingConstructed);
-            aiShips.push(aiShipBeingConstructed);
-        });
-        // at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
-        // and have empty location values
-        placeAiShips(aiShips, aiTable);
-        // at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
-        // now the player must place their ships
-        checkerArray = [];
-        submitBoolean = false;
-        shipCounter = 0;
-        currentShip = humanShips[shipCounter];
-    }
-    initialize();
+
+let humanTable;
+let aiTable;
+let humanShips;
+let aiShips;
+let checkerArray;
+let submitBoolean;
+let shipCounter;
+let currentShip;
+function initialize() {
+    humanShips = [];
+    aiShips = [];
+    verticalRadioElement.disabled = false;
+    horizontalRadioElement.disabled = false;
+    horizontalRadioElement.checked = true;
+    submitButtonElement.disabled = true;
+    updateTextElement(errorElement, '');
+    updateTextElement(instructionElement, '');
+    humanTable = new Table(true, humanTableElement);
+    aiTable = new Table(false, aiTableElement);
+    // at this point the tables and cells exist on the DOM and are displaying blank as the start of the game
+    SHIPVALUES.forEach(function (shipValue) {
+        let humanShipBeingConstructed = new Ship(shipValue, humanTable, true);
+        let aiShipBeingConstructed = new Ship(shipValue, aiTable, false);
+        humanShips.push(humanShipBeingConstructed);
+        aiShips.push(aiShipBeingConstructed);
+    });
+    // at this point the ship objects (in arrays) exist for each player, are associated with that player and that table, but are not associated with any cell objects
+    // and have empty location values
+    placeAiShips(aiShips, aiTable);
+    // at this point the ai ship object array has been filled, and the ai table object and its constituent cell objects and ship objects are ready for the game
+    // now the player must place their ships
+    checkerArray = [];
+    submitBoolean = false;
+    shipCounter = 0;
+    currentShip = humanShips[shipCounter];
+}
+initialize();
 let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
 updateTextElement(instructionElement, message);
 let selectedCell;
 
-humanTableElement.addEventListener('click', function(event){
-    if(shipCounter < 5){
+humanTableElement.addEventListener('click', function (event) {
+    if (shipCounter < 5) {
         currentShip = humanShips[shipCounter];
-        humanTable.cells.forEach(function(row){
-            row.forEach(function(cell){
-                if(event.target.id === cell.cellNameValue.name){
+        humanTable.cells.forEach(function (row) {
+            row.forEach(function (cell) {
+                if (event.target.id === cell.cellNameValue.name) {
                     selectedCell = cell;
                 }
             })
         });
         submitButtonElement.addEventListener('click', buttonPress);
 
-        if(checkerArray.length === 0){
+        if (checkerArray.length === 0) {
             let message = `You are placing ${currentShip.name}. It has ${currentShip.length} cells. Select the radio option of your desired orientation - horizontal is default. Then click top or left cell of the ship.`;
             updateTextElement(instructionElement, message);
             currentShip.setVerticalTo(!(horizontalRadioElement.checked));
-            if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
+            if (isShipPlacementValid(selectedCell, currentShip, humanTable) === 1) {
                 updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
                 verticalRadioElement.disabled = false;
                 horizontalRadioElement.disabled = false;
                 submitButtonElement.disabled = true;
                 return;
             }
-            else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
+            else if (isShipPlacementValid(selectedCell, currentShip, humanTable) === 2) {
                 updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
                 verticalRadioElement.disabled = false;
                 horizontalRadioElement.disabled = false;
@@ -441,11 +441,11 @@ humanTableElement.addEventListener('click', function(event){
             }
             else {
                 updateTextElement(errorElement, '');
-                for(let i = 0; i <  currentShip.length; i++){
-                    if(currentShip.isVertical){
+                for (let i = 0; i < currentShip.length; i++) {
+                    if (currentShip.isVertical) {
                         checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
                     }
-                    else{
+                    else {
                         checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
                     }
                 }
@@ -457,9 +457,9 @@ humanTableElement.addEventListener('click', function(event){
                 horizontalRadioElement.disabled = true;
             }
         }
-        else if(checkerArray.length !== 0 && !submitBoolean){
+        else if (checkerArray.length !== 0 && !submitBoolean) {
             currentShip.setVerticalTo(!(horizontalRadioElement.checked));
-            if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 1){
+            if (isShipPlacementValid(selectedCell, currentShip, humanTable) === 1) {
                 updateTextElement(errorElement, 'This location cannot be selected. Part of the ship would hang off the grid. Please select a valid location.');
                 removeClassFromCells(checkerArray, 'healthy-ship');
                 addClassToCells(checkerArray, 'water');
@@ -470,7 +470,7 @@ humanTableElement.addEventListener('click', function(event){
                 return;
 
             }
-            else if(isShipPlacementValid(selectedCell, currentShip, humanTable) === 2){
+            else if (isShipPlacementValid(selectedCell, currentShip, humanTable) === 2) {
                 updateTextElement(errorElement, 'This location would overlap an existing ship. Please select a valid location');
                 removeClassFromCells(checkerArray, 'healthy-ship');
                 addClassToCells(checkerArray, 'water');
@@ -485,11 +485,11 @@ humanTableElement.addEventListener('click', function(event){
                 removeClassFromCells(checkerArray, 'healthy-ship');
                 addClassToCells(checkerArray, 'water');
                 checkerArray = [];
-                for(let i = 0; i <  currentShip.length; i++){
-                    if(currentShip.isVertical){
+                for (let i = 0; i < currentShip.length; i++) {
+                    if (currentShip.isVertical) {
                         checkerArray.push(returnCellRelative(humanTable, selectedCell, i, 0));
                     }
-                    else{
+                    else {
                         checkerArray.push(returnCellRelative(humanTable, selectedCell, 0, i));
                     }
                 }
@@ -509,34 +509,34 @@ let aiMoves = 0;
 let selectedTargetCell;
 let allShipsSunk = false;
 let shotResult;
-aiTableElement.addEventListener('click', function(event){
-    aiTable.cells.forEach(function(row){
-        row.forEach(function(cell){
-            if(event.target.id === cell.cellNameValue.name){
+aiTableElement.addEventListener('click', function (event) {
+    aiTable.cells.forEach(function (row) {
+        row.forEach(function (cell) {
+            if (event.target.id === cell.cellNameValue.name) {
                 selectedTargetCell = cell;
             }
         })
     });
-    if(shipCounter === 5){
-        if(!allShipsSunk){
-            if(playerMoves <= aiMoves){
+    if (shipCounter === 5) {
+        if (!allShipsSunk) {
+            if (playerMoves <= aiMoves) {
                 shotResult = aiTable.processShot(selectedTargetCell);
-                if(shotResult === 0){
+                if (shotResult === 0) {
                     return;
                 }
-                else{
+                else {
                     playerMoves++;
                 }
-                if(aiMoves < playerMoves){
+                if (aiMoves < playerMoves) {
                     generateAIMoveDumb();
                     aiMoves++;
                     return;
                 }
-                else{
+                else {
                     return;
                 }
             }
-            else{
+            else {
                 return;
             }
         }
@@ -548,12 +548,12 @@ function buttonPress() {
     submitButtonElement.disabled = true;
     verticalRadioElement.disabled = false;
     horizontalRadioElement.disabled = false;
-    checkerArray.forEach(function(cell){
+    checkerArray.forEach(function (cell) {
         cell.cellElement.innerText = 'A';
     })
     humanTable.setAShip(currentShip, selectedCell);
     shipCounter++;
-    if(shipCounter >=5){
+    if (shipCounter >= 5) {
         humanTable.fillCellArrays();
         verticalRadioElement.disabled = true;
         horizontalRadioElement.disabled = true;
@@ -567,11 +567,12 @@ function buttonPress() {
     return;
 }
 
+// FIXME:
 function gameEnd(didHumanWin) {
-    if(didHumanWin){
+    if (didHumanWin) {
         updateTextElement(humanScore, 'Your wins: 1');
-    } 
-    else{
+    }
+    else {
         updateTextElement(aiScore, 'Ai wins: 1');
-    }  
+    }
 }

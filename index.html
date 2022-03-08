@@ -16,14 +16,10 @@
 <body>
   <!--This is the Page header bar-->
   <header class='page-header'>
-    <h1>Battleship</h1>
+    <h1>BATTLESHIP</h1>
   </header>
   <!--This is the 'Game Board' section-->
   <main>
-    <!--This is the header for the player's section of the board-->
-    <header class='board-header' id='human-board-header'>
-      Your Board
-    </header>
     <!--This is the player's board-->
     <div class='board' id='human-board'>
       <!--This is the player's table-->
@@ -35,124 +31,78 @@
       <section class='bottom' id='human-bottom'> </section>
     </div>
 
-    <!--This is the header for the 'Info Panel' section-->
-    <header id='info-header'>
-      Settings & Info
-    </header>
     <!--This is the info panel section-->
-    <div id='info-panel'>
+    <div class='info-panel'>
       <!--This is the ship status section in the info panel-->
-      <div class='info-section' id='ship-status'>
-        <!--This is the header for the ship status section-->
-        <div class='status-title' id='status-main-title'>
-          Ship Status
+      <!--These are the sub-headers for the ship status sections-->
+      <div class='status-title' id='human-status-header'>
+        &lt-- You
+      </div>
+      <div class='status-list'>
+        <!--Each of these is a container for one ship-->
+        <div class='human-status'>
+          <!--Each of these is one of the squares for the corresponding ship-->
+          <div class='human-square' id='aircraft-carrier'>A</div>
+          <div class='human-square' id='aircraft-carrier'>A</div>
+          <div class='human-square' id='aircraft-carrier'>A</div>
+          <div class='human-square' id='aircraft-carrier'>A</div>
+          <div class='human-square' id='aircraft-carrier'>A</div>
         </div>
-        <!--These are the sub-headers for the ship status sections-->
-        <div class='status-title status-subtitle' id='human-status-header'>
-          You
+        <div class='human-status'>
+          <div class='human-square' id='battleship'>B</div>
+          <div class='human-square' id='battleship'>B</div>
+          <div class='human-square' id='battleship'>B</div>
+          <div class='human-square' id='battleship'>B</div>
         </div>
-        <div class='status-title status-subtitle' id='ai-status-header'>
-          Computer
+        <div class='human-status'>
+          <div class='human-square' id='submarine'>S</div>
+          <div class='human-square' id='submarine'>S</div>
+          <div class='human-square' id='submarine'>S</div>
         </div>
-        <!--These are the displays of the ship statuses for the players-->
-        <div class='status-list'>
-          <!--Each of these is a container for one ship-->
-          <div class='human-status'>
-            <!--Each of these is one of the squares for the corresponding ship-->
-            <div class='human-square' id='aircraft-carrier'>A</div>
-            <div class='human-square' id='aircraft-carrier'>A</div>
-            <div class='human-square' id='aircraft-carrier'>A</div>
-            <div class='human-square' id='aircraft-carrier'>A</div>
-            <div class='human-square' id='aircraft-carrier'>A</div>
-          </div>
-          <div class='human-status'>
-            <div class='human-square' id='battleship'>B</div>
-            <div class='human-square' id='battleship'>B</div>
-            <div class='human-square' id='battleship'>B</div>
-            <div class='human-square' id='battleship'>B</div>
-          </div>
-          <div class='human-status'>
-            <div class='human-square' id='submarine'>S</div>
-            <div class='human-square' id='submarine'>S</div>
-            <div class='human-square' id='submarine'>S</div>
-          </div>
-          <div class='human-status'>
-            <div class='human-square' id='cruiser'>C</div>
-            <div class='human-square' id='cruiser'>C</div>
-            <div class='human-square' id='cruiser'>C</div>
-          </div>
-          <div class='human-status'>
-            <div class='human-square' id='destroyer'>D</div>
-            <div class='human-square' id='destroyer'>D</div>
-          </div>
+        <div class='human-status'>
+          <div class='human-square' id='cruiser'>C</div>
+          <div class='human-square' id='cruiser'>C</div>
+          <div class='human-square' id='cruiser'>C</div>
         </div>
-        <div class='status-list'>
-          <div class='ai-status'>
-            <div class='ai-square' id='aircraft-carrier'>A</div>
-            <div class='ai-square' id='aircraft-carrier'>A</div>
-            <div class='ai-square' id='aircraft-carrier'>A</div>
-            <div class='ai-square' id='aircraft-carrier'>A</div>
-            <div class='ai-square' id='aircraft-carrier'>A</div>
-          </div>
-          <div class='ai-status'>
-            <div class='ai-square' id='battleship'>B</div>
-            <div class='ai-square' id='battleship'>B</div>
-            <div class='ai-square' id='battleship'>B</div>
-            <div class='ai-square' id='battleship'>B</div>
-          </div>
-          <div class='ai-status'>
-            <div class='ai-square' id='submarine'>S</div>
-            <div class='ai-square' id='submarine'>S</div>
-            <div class='ai-square' id='submarine'>S</div>
-          </div>
-          <div class='ai-status'>
-            <div class='ai-square' id='cruiser'>C</div>
-            <div class='ai-square' id='cruiser'>C</div>
-            <div class='ai-square' id='cruiser'>C</div>
-          </div>
-          <div class='ai-status'>
-            <div class='ai-square' id='destroyer'>D</div>
-            <div class='ai-square' id='destroyer'>D</div>
-          </div>
+        <div class='human-status'>
+          <div class='human-square' id='destroyer'>D</div>
+          <div class='human-square' id='destroyer'>D</div>
         </div>
       </div>
-
-      <!--This is the display for the record-->
-      <div class='info-section' id='records'>
-        <div class='record-section' id='human-record'>
-          Your wins:
-        </div>
-        <div class='record-section' id='ai-record'>
-          Computer wins:
-        </div>
+      <div class='status-title' id='ai-status-header'>
+        Computer --&gt
       </div>
-
-      <!--This is the section that contains elements for user interaction-->
-      <div class='info-section' id='input-area'>
-        <!--This section contains the 'multiple choice' style options for ship placement-->
-        <div class='radio-section'>
-          <input type="radio" name='orientation' class='orientation' id='orientation-vertical' value='true'>
-          <label for='orientation-vertical'>Vertical</label>
-          <input type="radio" name='orientation' class='orientation' id='orientation-horizontal' value='false'>
-          <label for='orientation-horizontal'>Horizontal</label>
+      <div class='status-list'>
+        <div class='ai-status'>
+          <div class='ai-square' id='aircraft-carrier'>A</div>
+          <div class='ai-square' id='aircraft-carrier'>A</div>
+          <div class='ai-square' id='aircraft-carrier'>A</div>
+          <div class='ai-square' id='aircraft-carrier'>A</div>
+          <div class='ai-square' id='aircraft-carrier'>A</div>
         </div>
-        <!--This is the button to confirm ship placement-->
-        <input type='button' value='Submit Ship' class='submit-button' disabled='true'>
-      </div>
-      <!--This is the section that displays error messages in case of user error-->
-      <div class='info-section' id='instructions'>
-        <div id='instructions-header'>
-          Error Message:
+        <div class='ai-status'>
+          <div class='ai-square' id='battleship'>B</div>
+          <div class='ai-square' id='battleship'>B</div>
+          <div class='ai-square' id='battleship'>B</div>
+          <div class='ai-square' id='battleship'>B</div>
         </div>
-        <div id='instructions-content'>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        <div class='ai-status'>
+          <div class='ai-square' id='submarine'>S</div>
+          <div class='ai-square' id='submarine'>S</div>
+          <div class='ai-square' id='submarine'>S</div>
+        </div>
+        <div class='ai-status'>
+          <div class='ai-square' id='cruiser'>C</div>
+          <div class='ai-square' id='cruiser'>C</div>
+          <div class='ai-square' id='cruiser'>C</div>
+        </div>
+        <div class='ai-status'>
+          <div class='ai-square' id='destroyer'>D</div>
+          <div class='ai-square' id='destroyer'>D</div>
         </div>
       </div>
     </div>
     <!--This is the section for the computer's board-->
-    <header class='board-header' id='ai-board-header'>
-      The Computer's Board
-    </header>
     <div class='board' id='ai-board'>
       <div class='table' id='ai-table'>
       </div>
@@ -163,6 +113,29 @@
     </div>
   </main>
 
+  <div>
+    <!--This is the section that contains elements for user interaction-->
+    <div class='info-section' id='input-area'>
+      <!--This section contains the 'multiple choice' style options for ship placement-->
+      <div class='radio-section'>
+        <input type="radio" name='orientation' class='orientation' id='orientation-vertical' value='true'>
+        <label for='orientation-vertical'>Vertical</label>
+        <input type="radio" name='orientation' class='orientation' id='orientation-horizontal' value='false'>
+        <label for='orientation-horizontal'>Horizontal</label>
+      </div>
+      <!--This is the button to confirm ship placement-->
+      <input type='button' value='Submit Ship' class='submit-button' disabled='true'>
+    </div>
+    <!--This is the section that displays error messages in case of user error-->
+    <div class='info-section' id='instructions'>
+      <div id='instructions-header'>
+        Error Message:
+      </div>
+      <div id='instructions-content'>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </div>
+    </div>
+  </div>
   <!--This is  used to display instructions-->
   <div class='error-section'>
     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa architecto sunt itaque saepe ipsa assumenda dicta!

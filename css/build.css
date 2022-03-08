@@ -1,84 +1,49 @@
-/* These are the window dimensions for use
- * in responsive sizing calculations */
 body {
-  margin: 2.5vh 2.5vw;
+  margin: 1vh 1vw;
 }
 body header.page-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
   margin: 0;
-  background-color: burlywood;
-  font-family: "Quantico", sans-serif;
+  background-color: crimson;
+  height: 10vh;
 }
 body header.page-header h1 {
-  margin-block-start: 0;
-  margin-block-end: 0;
+  margin: auto;
+  color: white;
+  text-shadow: 0 0.4761904762vh 0.2222222222vh black;
+  font-family: "Quantico", sans-serif;
+  width: 50%;
+  text-align: center;
+  font-size: 6.6666666667vh;
 }
 body main {
   display: grid;
-  grid-template-rows: minmax(30px, 2fr) minmax(300px, 20fr);
-  grid-template-columns: minmax(300px, 20fr) minmax(150px, 10fr) minmax(300px, 20fr);
-  grid-template-areas: "human-header info-header ai-header" "human-table info-area ai-table";
+  width: 98vw;
+  height: 41.5757575758vw;
+  grid-template-rows: 2.9696969697vw 35.6363636364vw 2.9696969697vw;
+  grid-template-columns: 2.9696969697vw 35.6363636364vw 2.9696969697vw 14.8484848485vw 2.9696969697vw 35.6363636364vw 2.9696969697vw;
 }
-body main header {
-  background-color: seagreen;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-body main .board-header {
-  font-size: 3vw;
-}
-body main #info-header {
-  grid-area: info-header;
-  font-size: 2.5vw;
-}
-body main #human-board-header {
-  grid-area: human-header;
-}
-body main #ai-board-header {
-  grid-area: ai-header;
-}
-body main div {
+body main > div {
+  grid-row-start: 2;
   display: grid;
 }
 body main div.board {
   background-color: blue;
-  aspect-ratio: 1;
-  grid-template-rows: 1fr 10fr 1fr;
-  grid-template-columns: 1fr 10fr 1fr;
+  width: 35.6363636364vw;
+  height: 35.6363636364vw;
+  grid-template-rows: 2.9696969697vw 29.696969697vw 2.9696969697vw;
+  grid-template-columns: 2.9696969697vw 29.696969697vw 2.9696969697vw;
 }
 body main div.board div.table {
   grid-column-start: 2;
   grid-column-end: 2;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
+  grid-template-columns: repeat(10, 2.9696969697vw);
+  grid-template-rows: repeat(10, 2.9696969697vw);
 }
 body main div.board div.table div.cell {
   border: 1px solid black;
   text-align: center;
   font-size: 2.5vw;
-}
-body main div.board div.table div.hit-ship {
-  background-color: tomato;
-}
-body main div.board div.table div.sunk-ship {
-  background-color: maroon;
-}
-body main div.board div.table div.miss {
-  background-color: whitesmoke;
-}
-body main div.board div.table div.water {
-  background-color: blue;
-}
-body main div.board div.table div.fog-of-war {
-  background-color: #414141;
-}
-body main div.board div.table div.healthy-ship {
-  background-color: #7a7a7a;
 }
 body main div.board section {
   background-color: lightgray;
@@ -86,7 +51,7 @@ body main div.board section {
 }
 body main div.board section.left, body main div.board section.right {
   grid-row-start: 2;
-  grid-template-rows: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 2.9696969697vw);
 }
 body main div.board section.left {
   grid-column-start: 1;
@@ -96,7 +61,7 @@ body main div.board section.right {
 }
 body main div.board section.top, body main div.board section.bottom {
   grid-column-start: 2;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(10, 2.9696969697vw);
 }
 body main div.board section.top {
   grid-row-start: 1;
@@ -105,84 +70,74 @@ body main div.board section.bottom {
   grid-row-start: 3;
 }
 body main #human-board {
-  grid-area: human-table;
+  grid-column-start: 2;
 }
 body main #ai-board {
-  grid-area: ai-table;
+  grid-column-start: 6;
 }
-body main #info-panel {
-  grid-area: info-area;
+body main .info-panel {
+  grid-column-start: 4;
+  width: 14.8484848485vw;
+  height: 35.6363636364vw;
   background-color: cornflowerblue;
-  grid-template-rows: 7fr 1fr 1fr 1fr 2fr;
-  align-items: stretch;
-  justify-items: stretch;
+  grid-template-rows: 14.8484848485vw 2.9696969697vw 2.9696969697vw 14.8484848485vw;
 }
-body main #info-panel #ship-status {
-  display: grid;
-  grid-template-rows: 1fr 1fr 5fr;
-  grid-template-columns: 1fr 1fr;
-}
-body main #info-panel #ship-status div {
-  border: 1px solid black;
-}
-body main #info-panel #ship-status div.status-title {
-  background-color: cornflowerblue;
-  width: 100%;
-  text-align: center;
-  padding-top: 5px;
-}
-body main #info-panel #ship-status div.status-subtitle {
+body main .info-panel div.status-title {
   font-size: 1.5vw;
-}
-body main #info-panel #ship-status #status-main-title {
-  grid-column: 1/3;
-  font-size: 2vw;
-}
-body main #info-panel #ship-status div.status-list {
-  grid-row-start: 3;
-  display: grid;
-  grid-template-rows: repeat(5, 1fr);
-}
-body main #info-panel #ship-status div.status-list div.human-status, body main #info-panel #ship-status div.status-list div.ai-status {
-  display: flex;
-  justify-content: space-evenly;
-}
-body main #info-panel #ship-status div.status-list div.human-status div.human-square, body main #info-panel #ship-status div.status-list div.human-status div.ai-square, body main #info-panel #ship-status div.status-list div.ai-status div.human-square, body main #info-panel #ship-status div.status-list div.ai-status div.ai-square {
-  background-color: darkgrey;
-  border: 1px solid black;
-  aspect-ratio: 1/1;
-  align-self: center;
-  height: 1.5vmax;
   text-align: center;
   vertical-align: middle;
-  font-size: 1.2vw;
+  line-height: 2.9696969697vw;
 }
-body main #info-panel #records {
+body main .info-panel #human-status-header {
+  grid-area: 2/1/span 1/span 1;
+}
+body main .info-panel #ai-status-header {
+  grid-area: 3/1/span 1/span 1;
+}
+body main .info-panel div.status-list {
+  display: grid;
+  grid-template-rows: repeat(5, 2.9696969697vw);
+}
+body main .info-panel div.status-list div.human-status, body main .info-panel div.status-list div.ai-status {
+  display: grid;
+  grid-template-columns: repeat(5, 2.9696969697vw);
+}
+body main .info-panel div.status-list div.human-status div.human-square, body main .info-panel div.status-list div.human-status div.ai-square, body main .info-panel div.status-list div.ai-status div.human-square, body main .info-panel div.status-list div.ai-status div.ai-square {
+  background-color: darkgrey;
+  box-shadow: inset 0 0 0 1px #cccccc;
+  font-size: 1.2vw;
+  width: 2.9696969697vw;
+  height: 2.9696969697vw;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 2.9696969697vw;
+}
+body main .info-panel #records {
   grid-row-start: 2;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-body main #info-panel #records div.record-section {
+body main .info-panel #records div.record-section {
   font-size: 1.2vw;
   flex: 0 0 40%;
 }
-body main #info-panel #input-area {
+body main .info-panel #input-area {
   grid-row: 3/5;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
 }
-body main #info-panel #input-area div.radio-section {
+body main .info-panel #input-area div.radio-section {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
-body main #info-panel #input-area div.radio-section label {
+body main .info-panel #input-area div.radio-section label {
   font-size: 1.2vw;
 }
-body main #info-panel #instructions {
+body main .info-panel #instructions {
   grid-row-start: 5;
   display: flex;
   flex-direction: column;
@@ -194,6 +149,30 @@ body div.error-section {
   background-color: burlywood;
   font-size: 2vw;
   min-height: 3vw;
+}
+
+div.hit-ship {
+  background-color: tomato;
+}
+
+div.sunk-ship {
+  background-color: maroon;
+}
+
+div.miss {
+  background-color: whitesmoke;
+}
+
+div.water {
+  background-color: blue;
+}
+
+div.fog-of-war {
+  background-color: #414141;
+}
+
+div.healthy-ship {
+  background-color: #7a7a7a;
 }
 
 /*# sourceMappingURL=build.css.map */

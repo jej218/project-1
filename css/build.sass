@@ -1,82 +1,83 @@
-/* These are the window dimensions for use
- in responsive sizing calculations */
+// These are the window dimensions for use
+// in responsive sizing calculations
 $full-width: 100vw
 $full-height: 100vh
 
-$body-margin-lr: calc($full-width / 40)
-$body-margin-tb: calc($full-height / 40)
+// Variables for body margins
+$body-margin-lr: calc($full-width / 100)
+$body-margin-tb: calc($full-height / 100)
+
+// Variables for page header and title sizing
+$page-header-height: calc($full-height / 10)
+$page-header-font-size: calc($page-header-height / 1.5)
+$page-header-shadow-offset: calc($page-header-font-size / 14)
+$page-header-shadow-blur: calc($page-header-font-size / 30)
+
+// main playing area width set to full width of body excluding margins
+// main playing area height set to its width * 14/33 to keep playing boards at proper aspect ratio
+$main-width: $full-width - ($body-margin-lr * 2)
+$main-height: $main-width * calc(14 / 33)
+
+// main-unit is the height and width of one cell, the margins, and the labels surrounding the playing area
+$main-unit: calc($main-height / 14)
+
+// board is 12 units (10 for table and 2 for labels) by 12 units
+// info panel is 5 units by 12 units
+// table is 10 by 10 units
+$board-width-height: $main-unit * 12
+$info-panel-width: $main-unit * 5
+$table-width-height: $main-unit * 10
 
 $title-font: 'Quantico', sans-serif
 
 body
+    // margins set to 1% of window
     margin: $body-margin-tb $body-margin-lr
 
+    // header of page, height is 10% of window
     header.page-header
-        display: flex
-        flex-direction: column
-        justify-content: space-around
-        align-items: center
         margin: 0
-        background-color: burlywood
-        font-family: $title-font
+        background-color: crimson
+        height: $page-header-height
 
         h1
-            margin-block-start: 0
-            margin-block-end: 0
+            margin: auto
+            color: white
+            text-shadow: 0 $page-header-shadow-offset $page-header-shadow-blur black
+            font-family: $title-font
+            width: 50%
+            text-align: center
+            font-size: $page-header-font-size
 
     main
         display: grid
-        grid-template-rows: minmax(30px, 2fr) minmax(300px, 20fr)
-        grid-template-columns: minmax(300px, 20fr) minmax(150px, 10fr) minmax(300px, 20fr)
-        grid-template-areas: 'human-header info-header ai-header' 'human-table info-area ai-table'
+        width: $main-width
+        height: $main-height
+        grid-template-rows: $main-unit $board-width-height $main-unit
+        grid-template-columns: $main-unit $board-width-height $main-unit $info-panel-width $main-unit $board-width-height $main-unit
 
-        header
-            background-color: seagreen
-            display: flex
-            justify-content: center
-            align-items: center
-        .board-header
-            font-size: 3vw
-        #info-header
-            grid-area: info-header
-            font-size: 2.5vw
-        #human-board-header
-            grid-area: human-header
-        #ai-board-header
-            grid-area: ai-header
-
-        div
+        >div
+            grid-row-start: 2
             display: grid
 
         div.board
             background-color: blue
-            aspect-ratio: 1
-            grid-template-rows: 1fr 10fr 1fr
-            grid-template-columns: 1fr 10fr 1fr
+            width: $board-width-height
+            height: $board-width-height
+            grid-template-rows: $main-unit $table-width-height $main-unit
+            grid-template-columns: $main-unit $table-width-height $main-unit
 
             div.table
                 grid-column-start: 2
                 grid-column-end: 2
                 display: grid
-                grid-template-columns: repeat(10, 1fr)
-                grid-template-rows: repeat(10, 1fr)
+                grid-template-columns: repeat(10, $main-unit)
+                grid-template-rows: repeat(10, $main-unit)
 
                 div.cell
                     border: 1px solid black
                     text-align: center
-                    font-size: 2.5vw
-                div.hit-ship
-                    background-color: tomato
-                div.sunk-ship
-                    background-color: maroon
-                div.miss
-                    background-color: whitesmoke
-                div.water
-                    background-color: blue
-                div.fog-of-war
-                    background-color: #414141
-                div.healthy-ship
-                    background-color: rgb(122, 122, 122)
+                    font-size: 2.5vw //FIXME:
 
             section
                 background-color: lightgray
@@ -84,7 +85,7 @@ body
 
             section.left, section.right
                 grid-row-start: 2
-                grid-template-rows: repeat(10, 1fr)
+                grid-template-rows: repeat(10, $main-unit)
             section.left
                 grid-column-start: 1
             section.right
@@ -92,63 +93,54 @@ body
 
             section.top, section.bottom
                 grid-column-start: 2
-                grid-template-columns: repeat(10, 1fr)
+                grid-template-columns: repeat(10, $main-unit)
             section.top
                 grid-row-start: 1
             section.bottom
                 grid-row-start: 3
 
         #human-board
-            grid-area: human-table
+            grid-column-start: 2
+
         #ai-board
-            grid-area: ai-table
+            grid-column-start: 6
 
-        #info-panel
-            grid-area: info-area
+        .info-panel
+            grid-column-start: 4
+            width: $info-panel-width
+            height: $board-width-height
             background-color: cornflowerblue
-            grid-template-rows: 7fr 1fr 1fr 1fr 2fr
-            align-items: stretch
-            justify-items: stretch
+            grid-template-rows: $info-panel-width $main-unit $main-unit $info-panel-width
 
-            #ship-status
+            div.status-title
+                font-size: 1.5vw //FIXME:
+                text-align: center
+                vertical-align: middle
+                line-height: $main-unit
+
+            #human-status-header
+                grid-area: 2 / 1 / span 1 / span 1
+
+            #ai-status-header
+                grid-area: 3 / 1 / span 1 / span 1
+
+            div.status-list
                 display: grid
-                grid-template-rows: 1fr 1fr 5fr
-                grid-template-columns: 1fr 1fr
+                grid-template-rows: repeat(5, $main-unit)
 
-                div
-                    border: 1px solid black
-
-                div.status-title
-                    background-color: cornflowerblue
-                    width: 100%
-                    text-align: center
-                    padding-top: 5px
-
-                div.status-subtitle
-                    font-size: 1.5vw
-
-                #status-main-title
-                    grid-column: 1 / 3
-                    font-size: 2vw
-
-                div.status-list
-                    grid-row-start: 3
+                div.human-status, div.ai-status
                     display: grid
-                    grid-template-rows: repeat(5, 1fr)
+                    grid-template-columns: repeat(5, $main-unit)
 
-                    div.human-status, div.ai-status
-                        display: flex
-                        justify-content: space-evenly
-
-                        div.human-square, div.ai-square
-                            background-color: darkgrey
-                            border: 1px solid black
-                            aspect-ratio: 1 / 1
-                            align-self: center
-                            height: 1.5vmax
-                            text-align: center
-                            vertical-align: middle
-                            font-size: 1.2vw
+                    div.human-square, div.ai-square
+                        background-color: darkgrey
+                        box-shadow: inset 0 0 0 1px hsl(0%, 0%, 80%)
+                        font-size: 1.2vw //FIXME:
+                        width: $main-unit
+                        height: $main-unit
+                        text-align: center
+                        vertical-align: middle
+                        line-height: $main-unit
 
             #records
                 grid-row-start: 2
@@ -187,3 +179,16 @@ body
         background-color: burlywood
         font-size: 2vw
         min-height: 3vw
+
+div.hit-ship
+    background-color: tomato
+div.sunk-ship
+    background-color: maroon
+div.miss
+    background-color: whitesmoke
+div.water
+    background-color: blue
+div.fog-of-war
+    background-color: #414141
+div.healthy-ship
+    background-color: rgb(122, 122, 122)
