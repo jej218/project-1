@@ -29,8 +29,25 @@ Technologies used
 Getting Started
 ---------------------
 - Link to the game: [https://jej218.github.io/project-1/]
-- Further Goals:
+- Future Features:
   - Improve AI target selection
   - Improve AI ship placement
   - Add ai difficulty selection
+  - Improve Game Loop Logic
+    - Fix ship status display
+    - Fix ship placement issues
+    - Fix message logic
+    - Fix game end logic
+    - Add minor delays to messaging and AI actions for clarity
   - add images and improve CSS
+    - Improve Styling
+      - Basic layout Redisign
+        - ~~Sass Migration~~
+        - ~~Dynamic sizing~~
+        - ~~Improve Table and Status Layout~~
+        - Improve input layout
+        - Improve message layout
+      - Add Reactive buttons
+    - Add images for ships, hits, misses
+  
+

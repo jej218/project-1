@@ -27,7 +27,7 @@ body main > div {
   display: grid;
 }
 body main div.board {
-  background-color: blue;
+  background-color: lightgray;
   width: 35.6363636364vw;
   height: 35.6363636364vw;
   grid-template-rows: 2.9696969697vw 29.696969697vw 2.9696969697vw;
